@@ -1,21 +1,18 @@
-<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>Painel 1002</title><script src="https://cdn.tailwindcss.com"></script></head>
-<body class="bg-black text-white p-6">
-<h1 class="text-3xl font-black">Painel 1002 - Criar Aviso</h1>
-<div class="mt-6 max-w-lg space-y-3">
-<input id="titulo" placeholder="Título" class="w-full p-3 rounded-xl bg-zinc-800">
-<textarea id="descricao" placeholder="Descrição" class="w-full p-3 rounded-xl bg-zinc-800"></textarea>
-<input id="materia" placeholder="Matéria (ex: Geral)" class="w-full p-3 rounded-xl bg-zinc-800">
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Painel 1002</title><script src="https://cdn.tailwindcss.com"></script></head>
+<body class="bg-[#0e0e11] text-white p-6"><h1 class="text-2xl font-black">Painel 1002</h1>
+<div class="mt-4 max-w-md space-y-3">
+<input id="titulo" placeholder="Título ex: Prova amanhã" class="w-full p-3 rounded-xl bg-zinc-800 border border-white/10">
+<textarea id="descricao" placeholder="Descrição" class="w-full p-3 rounded-xl bg-zinc-800 border border-white/10"></textarea>
+<input id="materia" placeholder="Matéria ex: GERAL" class="w-full p-3 rounded-xl bg-zinc-800 border border-white/10">
 <select id="prioridade" class="w-full p-3 rounded-xl bg-zinc-800"><option>Normal</option><option>Importante</option><option>Urgente</option></select>
-<label><input type="checkbox" id="destaque"> Destaque</label><br>
-<button onclick="enviar()" class="w-full bg-[#5865F2] p-4 rounded-xl font-bold">PUBLICAR</button>
-<p id="status"></p>
-</div>
-<div id="lista" class="mt-8"></div>
+<label class="flex gap-2"><input type="checkbox" id="destaque"> Destaque</label>
+<button onclick="enviar()" class="w-full bg-[#5865F2] p-4 rounded-2xl font-black">PUBLICAR AGORA</button>
+<p id="status" class="text-sm text-white/50"></p>
+</div><div id="lista" class="mt-8 max-w-md"></div>
 <script>
 const API='/api/avisos';
-async function carregar(){const r=await fetch(API);const d=await r.json();document.getElementById('lista').innerHTML=d.map(a=>`<div class="bg-zinc-900 p-3 m-2 rounded-xl flex justify-between"><span>${a.titulo} - ${a.prioridade}</span><button onclick="apagar('${a.id}')" class="text-red-400">Apagar</button></div>`).join('')}
-async function enviar(){const body={titulo:titulo.value,descricao:descricao.value,materia:materia.value||'GERAL',prioridade:prioridade.value,destaque:destaque.checked,novo:true,data_evento:new Date().toLocaleDateString()};status.innerText='Enviando...';await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});status.innerText='Publicado!';carregar()}
+async function carregar(){let r=await fetch(API);let d=await r.json();document.getElementById('lista').innerHTML=d.map(a=>`<div class="bg-zinc-900 p-3 rounded-xl flex justify-between mt-2"><b>${a.titulo}</b><button onclick="apagar('${a.id}')" class="text-red-400">x</button></div>`).join('')}
+async function enviar(){let body={titulo:titulo.value,descricao:descricao.value,materia:materia.value||'GERAL',prioridade:prioridade.value,destaque:destaque.checked,novo:true,data_evento:new Date().toLocaleDateString()};document.getElementById('status').innerText='Enviando...';await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});document.getElementById('status').innerText='Publicado com sucesso!';carregar()}
 async function apagar(id){await fetch(API+'/'+id,{method:'DELETE'});carregar()}
 carregar();
 </script></body></html>
