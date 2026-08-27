@@ -1,43 +1,60 @@
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
 const cors = require('cors');
-const app = express();
-const PORT = process.env.PORT || 10000;
+const path = require('path');
 
+const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
-const DB_PATH = path.join(__dirname, 'db.json');
-if(!fs.existsSync(DB_PATH)){
-  fs.writeFileSync(DB_PATH, JSON.stringify({alunos:[],avisos:[],materias:[],trabalhos:[],agenda:[],aulas:[]},null,2));
+const SUPABASE_URL = 'https://hoaxcirdtpsgtvdnkctm.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvYXhjaXJkdHBzZ3R2ZG5rY3RtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc4NTMyOTYsImV4cCI6MjEwMzQyOTI5Nn0.gVA5lpKMYoEMqEGzCVnY1-vx3V6eF-2OJ5kBDBw27Vk';
+
+async function sb(tabela, metodo = 'GET', body = null, query = '') {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${tabela}${query}`, {
+    method: metodo,
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation'
+    },
+    body: body? JSON.stringify(body) : null
+  });
+  const data = await res.json();
+  if (!res.ok) throw data;
+  return data;
 }
-function lerDB(){ return JSON.parse(fs.readFileSync(DB_PATH,'utf8')); }
-function salvarDB(db){ fs.writeFileSync(DB_PATH, JSON.stringify(db,null,2)); }
 
-['avisos','materias','trabalhos','agenda','alunos','aulas'].forEach(tipo=>{
-  app.get('/api/'+tipo, (req,res)=>{ try{ res.json(lerDB()[tipo]||[]); }catch{ res.json([]);} });
-  app.post('/api/'+tipo, (req,res)=>{
-    let db=lerDB(); if(!db[tipo]) db[tipo]=[];
-    let item={id:Date.now().toString(),...req.body, data_criacao:new Date().toISOString()};
-    db[tipo].push(item); salvarDB(db); res.json(item);
+const tabelas = ['alunos', 'avisos', 'materias', 'aulas', 'trabalhos', 'agenda'];
+
+tabelas.forEach(tabela => {
+  app.get(`/api/${tabela}`, async (req, res) => {
+    try {
+      const dados = await sb(tabela, 'GET', null, '?select=*&order=criado_em.desc');
+      res.json(dados);
+    } catch (e) { res.status(500).json(e); }
   });
-  app.delete('/api/'+tipo+'/:id', (req,res)=>{
-    let db=lerDB(); db[tipo]=(db[tipo]||[]).filter(i=>String(i.id)!=String(req.params.id)); salvarDB(db); res.json({ok:true});
+
+  app.post(`/api/${tabela}`, async (req, res) => {
+    try {
+      const item = {...req.body, id: req.body.id || Date.now().toString(), criado_em: new Date().toISOString() };
+      const salvo = await sb(tabela, 'POST', item);
+      res.json(salvo[0]);
+    } catch (e) { res.status(500).json(e); }
+  });
+
+  app.delete(`/api/${tabela}/:id`, async (req, res) => {
+    try {
+      await sb(tabela, 'DELETE', null, `?id=eq.${req.params.id}`);
+      res.json({ ok: true });
+    } catch (e) { res.status(500).json(e); }
   });
 });
 
-app.post('/api/eter', (req,res)=>{
-  res.json({resposta: `ÉTER AI: "${req.body.pergunta}" - Tô em beta, mas foca que vai cair na prova!`});
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.get('*', (req,res)=>{
-  if(req.path.startsWith('/api/')) return res.status(404).json({erro:'API não encontrada'});
-  let file = req.path==='/'? 'index.html' : req.path.substring(1);
-  let full = path.join(__dirname, file);
-  if(fs.existsSync(full)) return res.sendFile(full);
-  return res.sendFile(path.join(__dirname,'index.html'));
-});
-
-app.listen(PORT, ()=>console.log('1002 ONLINE '+PORT));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log('Rodando com Supabase!'));
