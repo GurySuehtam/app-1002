@@ -1,42 +1,116 @@
 <!DOCTYPE html>
-<html lang="pt-br"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Painel Mestre 1002</title><script src="https://cdn.tailwindcss.com"></script></head>
-<body class="bg-[#0e0e11] text-white p-4">
-<h1 class="text-3xl font-black">PAINEL MESTRE 1002</h1>
-<p class="text-white/40">Matheus Pereira - Representante</p>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin 1002 - Matheus Pereira</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;800;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+<style>
+body{font-family:'Inter',sans-serif;background:#0e0e11;color:white}
+.mono{font-family:'JetBrains Mono',monospace}
+.glass{background:rgba(255,255,255,0.06);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.08)}
+input,textarea,select{background:#1e1e26!important;color:white!important;border:1px solid rgba(255,255,255,0.1)!important}
+</style>
+</head>
+<body class="p-4">
 
-<div class="flex gap-2 mt-6 overflow-x-auto">
-<button onclick="setTab('avisos')" id="btn-avisos" class="px-4 py-2 bg-[#5865F2] rounded-full font-bold">Avisos</button>
-<button onclick="setTab('materias')" id="btn-materias" class="px-4 py-2 bg-white/10 rounded-full">Matérias</button>
-<button onclick="setTab('trabalhos')" id="btn-trabalhos" class="px-4 py-2 bg-white/10 rounded-full">Trabalhos</button>
-<button onclick="setTab('agenda')" id="btn-agenda" class="px-4 py-2 bg-white/10 rounded-full">Agenda</button>
+<div id="lock" style="position:fixed;inset:0;background:#0e0e11;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px">
+  <div style="width:100%;max-width:360px;background:#1a1a22;border:1px solid rgba(255,255,255,.12);border-radius:24px;padding:28px;text-align:center">
+    <div style="width:64px;height:64px;background:#fff;color:#000;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto">🔒</div>
+    <h2 style="color:#fff;font-weight:900;margin:16px 0 4px;font-size:18px">PAINEL RESTRITO</h2>
+    <p style="color:rgba(255,255,255,.5);font-size:11px;margin-bottom:20px;font-family:'JetBrains Mono',monospace">MATHEUS PEREIRA • 1002</p>
+    <input id="pass" type="password" placeholder="Digite a senha" style="width:100%;padding:16px;border-radius:999px;border:0;text-align:center;font-weight:900;font-size:16px;outline:none;background:#fff!important;color:#000!important">
+    <button onclick="checkPass()" style="width:100%;margin-top:12px;background:#5865F2;color:#fff;border:0;border-radius:999px;padding:16px;font-weight:900;cursor:pointer">ENTRAR NO PAINEL</button>
+    <div id="err" style="color:#ef4444;font-size:12px;font-weight:800;margin-top:12px;display:none">Senha errada!</div>
+    <button onclick="window.location.href='turma 1002.html'" style="margin-top:14px;background:transparent;color:rgba(255,255,255,.4);border:0;font-size:11px;cursor:pointer;text-decoration:underline">Voltar para o app</button>
+  </div>
 </div>
-
-<div class="mt-6 glass bg-white/5 p-5 rounded-[20px] border border-white/10 max-w-lg">
-<h2 id="formTitle" class="font-bold">Novo Aviso</h2>
-<input id="titulo" placeholder="Título" class="w-full mt-3 p-3 rounded-xl bg-zinc-800">
-<textarea id="descricao" placeholder="Descrição" class="w-full mt-2 p-3 rounded-xl bg-zinc-800"></textarea>
-<input id="extra" placeholder="Matéria / Data / Link (muda com a aba)" class="w-full mt-2 p-3 rounded-xl bg-zinc-800">
-<select id="prioridade" class="w-full mt-2 p-3 rounded-xl bg-zinc-800"><option>Normal</option><option>Importante</option><option>Urgente</option></select>
-<label class="flex gap-2 mt-2"><input type="checkbox" id="destaque"> Destaque</label>
-<button onclick="enviar()" class="w-full mt-4 bg-[#5865F2] p-4 rounded-xl font-black">PUBLICAR EM <span id="tabName">AVISOS</span></button>
-<p id="status" class="text-xs mt-2 text-white/40"></p>
-</div>
-
-<div id="lista" class="mt-8 max-w-lg"></div>
 
 <script>
-let tab='avisos';
-function setTab(t){tab=t;document.querySelectorAll('button').forEach(b=>b.classList.replace('bg-[#5865F2]','bg-white/10'));document.getElementById('btn-'+t).classList.replace('bg-white/10','bg-[#5865F2]');document.getElementById('tabName').innerText=t.toUpperCase();document.getElementById('formTitle').innerText='Novo em '+t; carregar();}
-
-async function carregar(){let r=await fetch('/api/'+tab);let d=await r.json();lista.innerHTML=d.map(a=>`<div class="bg-zinc-900 p-3 rounded-xl flex justify-between mt-2"><div><b>${a.titulo||a.nome}</b><p class="text-xs text-white/40">${a.descricao||''}</p></div><button onclick="apagar('${a.id}')" class="text-red-400 font-bold">X</button></div>`).join('') || 'Vazio'}
-async function enviar(){
-  let body={titulo:titulo.value,descricao:descricao.value,novo:true,data_evento:new Date().toLocaleDateString(),prioridade:prioridade.value,destaque:destaque.checked};
-  if(tab=='avisos') body.materia=extra.value||'GERAL';
-  if(tab=='materias') body.materia=extra.value;
-  if(tab=='trabalhos') body.data_entrega=extra.value;
-  if(tab=='agenda') body.data=extra.value;
-  status.innerText='Enviando...'; await fetch('/api/'+tab,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); status.innerText='Publicado em '+tab+'!'; titulo.value=''; descricao.value=''; carregar();
+const SENHA_ADMIN = "1002ADM";
+function checkPass(){
+  let p = document.getElementById('pass').value;
+  if(p === SENHA_ADMIN){
+    document.getElementById('lock').style.display='none';
+    localStorage.setItem('admin1002','ok');
+  }else{
+    document.getElementById('err').style.display='block';
+    document.getElementById('pass').value='';
+  }
 }
-async function apagar(id){await fetch('/api/'+tab+'/'+id,{method:'DELETE'}); carregar();}
-setTab('avisos');
-</script></body></html>
+if(localStorage.getItem('admin1002')==='ok'){
+  document.getElementById('lock').style.display='none';
+}
+</script>
+
+<div class="max-w-6xl mx-auto">
+  <div class="flex justify-between items-center">
+    <div>
+      <h1 class="text-3xl font-black">PAINEL ADMIN 1002 <span class="text-[#5865F2]">.</span></h1>
+      <p class="text-xs mono text-white/40">LOGADO COMO MATHEUS PEREIRA | <a href="painel-aulas.html" class="text-[#5865F2] underline">IR PARA PAINEL DE AULAS →</a></p>
+    </div>
+    <button onclick="load()" class="bg-[#5865F2] px-5 py-3 rounded-xl font-bold">🔄 ATUALIZAR</button>
+  </div>
+  <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mt-6" id="dash"></div>
+  <div class="grid lg:grid-cols-3 gap-5 mt-8">
+    <div class="space-y-5">
+      <div class="glass p-5 rounded-[22px]">
+        <h2 class="font-black">📢 CRIAR AVISO</h2>
+        <input id="avTitulo" placeholder="Título ex: Prova amanhã" class="w-full mt-3 p-3 rounded-xl">
+        <textarea id="avDesc" placeholder="Descrição completa" class="w-full mt-2 p-3 rounded-xl h-24"></textarea>
+        <div class="flex gap-2 mt-2"><input id="avMat" placeholder="Matéria" class="flex-1 p-3 rounded-xl"><input id="avData" type="date" class="flex-1 p-3 rounded-xl"></div>
+        <div class="flex gap-2 mt-2 items-center"><select id="avPri" class="flex-1 p-3 rounded-xl"><option>Normal</option><option>Importante</option><option>Urgente</option></select><label class="flex gap-2 text-sm"><input id="avDest" type="checkbox"> Destaque</label></div>
+        <button onclick="criarAviso()" class="w-full mt-3 bg-[#5865F2] p-3 rounded-xl font-black">PUBLICAR AVISO</button>
+        <div id="listaAvisos" class="mt-4 space-y-2 text-sm"></div>
+      </div>
+      <div class="glass p-5 rounded-[22px]">
+        <h2 class="font-black">👥 ALUNOS CADASTRADOS</h2>
+        <div id="listaAlunos" class="mt-4 space-y-2 max-h-[400px] overflow-auto"></div>
+      </div>
+    </div>
+    <div class="space-y-5">
+      <div class="glass p-5 rounded-[22px]">
+        <h2 class="font-black">📚 MATÉRIAS</h2>
+        <div class="flex gap-2 mt-3"><input id="matNome" placeholder="Nome: Matemática" class="flex-1 p-3 rounded-xl"><input id="matIcon" placeholder="📐" class="w-20 p-3 rounded-xl"></div>
+        <button onclick="criarMateria()" class="w-full mt-2 bg-white text-black p-3 rounded-xl font-black">CRIAR MATÉRIA</button>
+        <div id="listaMat" class="mt-4 text-sm"></div>
+      </div>
+    </div>
+    <div class="space-y-5">
+      <div class="glass p-5 rounded-[22px]">
+        <h2 class="font-black">📝 TRABALHOS</h2>
+        <input id="trMat" placeholder="Matéria" class="w-full mt-3 p-3 rounded-xl"><input id="trTit" placeholder="Título" class="w-full mt-2 p-3 rounded-xl"><textarea id="trDesc" placeholder="Descrição" class="w-full mt-2 p-3 rounded-xl"></textarea><input id="trData" type="date" class="w-full mt-2 p-3 rounded-xl"><select id="trPri" class="w-full mt-2 p-3 rounded-xl"><option>Normal</option><option>Importante</option><option>Urgente</option></select>
+        <button onclick="criarTrab()" class="w-full mt-2 bg-orange-500 p-3 rounded-xl font-black">CRIAR TRABALHO</button>
+        <div id="listaTrab" class="mt-4 text-sm"></div>
+      </div>
+      <div class="glass p-5 rounded-[22px]">
+        <h2 class="font-black">📅 AGENDA</h2>
+        <input id="agTit" placeholder="Título: Prova de Física" class="w-full mt-3 p-3 rounded-xl"><textarea id="agDesc" placeholder="Descrição" class="w-full mt-2 p-3 rounded-xl"></textarea><div class="flex gap-2 mt-2"><input id="agData" type="date" class="flex-1 p-3 rounded-xl"><input id="agHora" type="time" class="flex-1 p-3 rounded-xl"></div><select id="agPri" class="w-full mt-2 p-3 rounded-xl"><option>Normal</option><option>Importante</option><option>Urgente</option></select>
+        <button onclick="criarAgenda()" class="w-full mt-2 bg-green-600 p-3 rounded-xl font-black">CRIAR EVENTO</button>
+        <div id="listaAgenda" class="mt-4 text-sm"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = location.origin;
+async function load(){
+  const [alunos, avisos, materias, trabalhos, agenda] = await Promise.all([fetch(API+'/api/alunos').then(r=>r.json()), fetch(API+'/api/avisos').then(r=>r.json()), fetch(API+'/api/materias').then(r=>r.json()), fetch(API+'/api/trabalhos').then(r=>r.json()), fetch(API+'/api/agenda').then(r=>r.json())]);
+  document.getElementById('dash').innerHTML=`<div class="glass p-4 rounded-xl">👥 <b class="text-xl">${alunos.length}</b><br><span class="text-[10px] mono">ALUNOS</span></div><div class="glass p-4 rounded-xl">📢 <b>${avisos.length}</b> avisos</div><div class="glass p-4 rounded-xl">📚 <b>${materias.length}</b> matérias</div><div class="glass p-4 rounded-xl">📝 <b>${trabalhos.length}</b> trabalhos</div><div class="glass p-4 rounded-xl">📅 <b>${agenda.length}</b> eventos</div>`;
+  document.getElementById('listaAlunos').innerHTML = alunos.map(a=>`<div class="flex justify-between items-center bg-white/[0.05] p-3 rounded-xl"><div><b>${a.nome}</b><div class="text-[11px] text-white/40 mono">${a.turma}</div></div><div class="w-2 h-2 bg-green-400 rounded-full"></div></div>`).join('')||'<p class="text-white/30 text-sm">Nenhum aluno</p>';
+  document.getElementById('listaAvisos').innerHTML=avisos.map(a=>`<div class="flex justify-between bg-white/5 p-2 rounded"><span>${a.titulo}</span><button onclick="del('/api/avisos/${a.id}')" class="text-red-400">Excluir</button></div>`).join('');
+  document.getElementById('listaMat').innerHTML=materias.map(m=>`<div class="flex justify-between bg-white/5 p-2 rounded mt-1"><span>${m.icone} ${m.nome}</span><button onclick="del('/api/materias/${m.id}')" class="text-red-400">x</button></div>`).join('');
+  document.getElementById('listaTrab').innerHTML=trabalhos.map(t=>`<div class="flex justify-between bg-white/5 p-2 rounded mt-1"><span>${t.titulo}</span><button onclick="del('/api/trabalhos/${t.id}')" class="text-red-400">x</button></div>`).join('');
+  document.getElementById('listaAgenda').innerHTML=agenda.map(a=>`<div class="flex justify-between bg-white/5 p-2 rounded mt-1"><span>${a.titulo}</span><button onclick="del('/api/agenda/${a.id}')" class="text-red-400">x</button></div>`).join('');
+}
+async function criarAviso(){ await fetch(API+'/api/avisos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({titulo:avTitulo.value,descricao:avDesc.value,materia:avMat.value,data_evento:avData.value,prioridade:avPri.value,destaque:avDest.checked})}); load(); }
+async function criarMateria(){ await fetch(API+'/api/materias',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome:matNome.value,icone:matIcon.value||'📚'})}); matNome.value=''; load(); }
+async function criarTrab(){ await fetch(API+'/api/trabalhos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({materia:trMat.value,titulo:trTit.value,descricao:trDesc.value,data_entrega:trData.value,prioridade:trPri.value})}); load(); }
+async function criarAgenda(){ await fetch(API+'/api/agenda',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({titulo:agTit.value,descricao:agDesc.value,data_evento:agData.value,horario:agHora.value,prioridade:agPri.value})}); load(); }
+async function del(url){ if(!confirm('Excluir?')) return; await fetch(API+url,{method:'DELETE'}); load(); }
+load(); setInterval(load, 5000);
+</script>
+</body>
+</html>
