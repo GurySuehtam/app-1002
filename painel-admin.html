@@ -1,58 +1,21 @@
 <!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"><title>Painel Admin - 1002</title></head>
-<body>
-<h1>Publicar Aviso - 1002</h1>
-
-<input id="titulo" placeholder="Título do aviso" style="width:90%;padding:10px"><br><br>
-<textarea id="descricao" placeholder="Descrição" style="width:90%;height:100px;padding:10px"></textarea><br><br>
-<input id="materia" placeholder="Matéria" style="width:90%;padding:10px"><br><br>
-<button onclick="enviar()" style="padding:15px 30px;background:blue;color:white">PUBLICAR AVISO</button>
-
+<html><head><meta charset="UTF-8"><title>Painel 1002</title><script src="https://cdn.tailwindcss.com"></script></head>
+<body class="bg-black text-white p-6">
+<h1 class="text-3xl font-black">Painel 1002 - Criar Aviso</h1>
+<div class="mt-6 max-w-lg space-y-3">
+<input id="titulo" placeholder="Título" class="w-full p-3 rounded-xl bg-zinc-800">
+<textarea id="descricao" placeholder="Descrição" class="w-full p-3 rounded-xl bg-zinc-800"></textarea>
+<input id="materia" placeholder="Matéria (ex: Geral)" class="w-full p-3 rounded-xl bg-zinc-800">
+<select id="prioridade" class="w-full p-3 rounded-xl bg-zinc-800"><option>Normal</option><option>Importante</option><option>Urgente</option></select>
+<label><input type="checkbox" id="destaque"> Destaque</label><br>
+<button onclick="enviar()" class="w-full bg-[#5865F2] p-4 rounded-xl font-bold">PUBLICAR</button>
 <p id="status"></p>
-
-<h2>Avisos atuais:</h2>
-<div id="lista"></div>
-
+</div>
+<div id="lista" class="mt-8"></div>
 <script>
-const API = '/api/avisos';
-
-async function carregar(){
-  const r = await fetch(API);
-  const dados = await r.json();
-  document.getElementById('lista').innerHTML = dados.map(a=>`
-    <div style="border:1px solid #ccc;padding:10px;margin:5px">
-      <b>${a.titulo}</b> - ${a.materia} 
-      <button onclick="apagar('${a.id}')">Apagar</button>
-    </div>
-  `).join('');
-}
-
-async function enviar(){
-  const titulo = document.getElementById('titulo').value;
-  const descricao = document.getElementById('descricao').value;
-  const materia = document.getElementById('materia').value;
-  if(!titulo) return alert('Digite o título');
-  
-  document.getElementById('status').innerText = 'Enviando...';
-  await fetch(API, {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({titulo, descricao, materia})
-  });
-  document.getElementById('status').innerText = 'Publicado com sucesso!';
-  document.getElementById('titulo').value='';
-  document.getElementById('descricao').value='';
-  carregar();
-}
-
-async function apagar(id){
-  if(!confirm('Apagar?')) return;
-  await fetch(API+'/'+id, {method:'DELETE'});
-  carregar();
-}
-
+const API='/api/avisos';
+async function carregar(){const r=await fetch(API);const d=await r.json();document.getElementById('lista').innerHTML=d.map(a=>`<div class="bg-zinc-900 p-3 m-2 rounded-xl flex justify-between"><span>${a.titulo} - ${a.prioridade}</span><button onclick="apagar('${a.id}')" class="text-red-400">Apagar</button></div>`).join('')}
+async function enviar(){const body={titulo:titulo.value,descricao:descricao.value,materia:materia.value||'GERAL',prioridade:prioridade.value,destaque:destaque.checked,novo:true,data_evento:new Date().toLocaleDateString()};status.innerText='Enviando...';await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});status.innerText='Publicado!';carregar()}
+async function apagar(id){await fetch(API+'/'+id,{method:'DELETE'});carregar()}
 carregar();
-</script>
-</body>
-</html>
+</script></body></html>
