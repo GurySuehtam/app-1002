@@ -1,6 +1,5 @@
 const express = require('express');
 const path = require('path');
-const fs = require('fs');
 const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 10000;
@@ -8,47 +7,29 @@ const PORT = process.env.PORT || 10000;
 app.use(cors());
 app.use(express.json());
 
-// BANCO DE DADOS
-const DB_FILE = path.join(__dirname, 'banco.json');
-let db = { noticias: [], avisos: [], alunos: [], materias: [], trabalhos: [] };
-if (fs.existsSync(DB_FILE)) {
-  try { db = JSON.parse(fs.readFileSync(DB_FILE, 'utf8')); } catch(e){}
-}
-function salvar() {
-  fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
-}
+let db = { avisos: [], alunos: [], aulas: [], trabalhos: [], agenda: [], materias: [] };
 
-// ROTAS API - TEM QUE VIR ANTES DO STATIC
 function criarRotas(nome) {
-  app.get(`/api/${nome}`, (req, res) => {
-    res.json(db[nome] || []);
-  });
+  app.get(`/api/${nome}`, (req, res) => res.json(db[nome] || []));
   app.post(`/api/${nome}`, (req, res) => {
-    const item = Object.assign({ id: Date.now().toString(), data: new Date().toISOString() }, req.body);
-    db[nome].push(item);
-    salvar();
+    const item = { id: Date.now().toString(), novo:true,...req.body };
+    db[nome].unshift(item);
     res.json(item);
   });
   app.delete(`/api/${nome}/:id`, (req, res) => {
     db[nome] = db[nome].filter(i => i.id!= req.params.id);
-    salvar();
-    res.json({ ok: true });
+    res.json({ok:true});
+  });
+  app.put(`/api/${nome}/:id/lido`, (req, res) => {
+    const item = db[nome].find(i => i.id == req.params.id);
+    if(item) item.novo = false;
+    res.json({ok:true});
   });
 }
 
-criarRotas('noticias');
-criarRotas('avisos');
-criarRotas('alunos');
-criarRotas('materias');
-criarRotas('trabalhos');
+['avisos','alunos','aulas','trabalhos','agenda','materias'].forEach(criarRotas);
 
-// SÓ DEPOIS serve os arquivos do site
 app.use(express.static(__dirname));
+app.get('/', (req,res)=> res.sendFile(path.join(__dirname,'turma 1002.html')));
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'inicio.html'));
-});
-
-app.listen(PORT, () => {
-  console.log('Rodando na porta ' + PORT);
-});
+app.listen(PORT, ()=> console.log('ON em '+PORT));
