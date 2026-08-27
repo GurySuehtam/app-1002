@@ -1,18 +1,42 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Painel 1002</title><script src="https://cdn.tailwindcss.com"></script></head>
-<body class="bg-[#0e0e11] text-white p-6"><h1 class="text-2xl font-black">Painel 1002</h1>
-<div class="mt-4 max-w-md space-y-3">
-<input id="titulo" placeholder="Título ex: Prova amanhã" class="w-full p-3 rounded-xl bg-zinc-800 border border-white/10">
-<textarea id="descricao" placeholder="Descrição" class="w-full p-3 rounded-xl bg-zinc-800 border border-white/10"></textarea>
-<input id="materia" placeholder="Matéria ex: GERAL" class="w-full p-3 rounded-xl bg-zinc-800 border border-white/10">
-<select id="prioridade" class="w-full p-3 rounded-xl bg-zinc-800"><option>Normal</option><option>Importante</option><option>Urgente</option></select>
-<label class="flex gap-2"><input type="checkbox" id="destaque"> Destaque</label>
-<button onclick="enviar()" class="w-full bg-[#5865F2] p-4 rounded-2xl font-black">PUBLICAR AGORA</button>
-<p id="status" class="text-sm text-white/50"></p>
-</div><div id="lista" class="mt-8 max-w-md"></div>
+<!DOCTYPE html>
+<html lang="pt-br"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Painel Mestre 1002</title><script src="https://cdn.tailwindcss.com"></script></head>
+<body class="bg-[#0e0e11] text-white p-4">
+<h1 class="text-3xl font-black">PAINEL MESTRE 1002</h1>
+<p class="text-white/40">Matheus Pereira - Representante</p>
+
+<div class="flex gap-2 mt-6 overflow-x-auto">
+<button onclick="setTab('avisos')" id="btn-avisos" class="px-4 py-2 bg-[#5865F2] rounded-full font-bold">Avisos</button>
+<button onclick="setTab('materias')" id="btn-materias" class="px-4 py-2 bg-white/10 rounded-full">Matérias</button>
+<button onclick="setTab('trabalhos')" id="btn-trabalhos" class="px-4 py-2 bg-white/10 rounded-full">Trabalhos</button>
+<button onclick="setTab('agenda')" id="btn-agenda" class="px-4 py-2 bg-white/10 rounded-full">Agenda</button>
+</div>
+
+<div class="mt-6 glass bg-white/5 p-5 rounded-[20px] border border-white/10 max-w-lg">
+<h2 id="formTitle" class="font-bold">Novo Aviso</h2>
+<input id="titulo" placeholder="Título" class="w-full mt-3 p-3 rounded-xl bg-zinc-800">
+<textarea id="descricao" placeholder="Descrição" class="w-full mt-2 p-3 rounded-xl bg-zinc-800"></textarea>
+<input id="extra" placeholder="Matéria / Data / Link (muda com a aba)" class="w-full mt-2 p-3 rounded-xl bg-zinc-800">
+<select id="prioridade" class="w-full mt-2 p-3 rounded-xl bg-zinc-800"><option>Normal</option><option>Importante</option><option>Urgente</option></select>
+<label class="flex gap-2 mt-2"><input type="checkbox" id="destaque"> Destaque</label>
+<button onclick="enviar()" class="w-full mt-4 bg-[#5865F2] p-4 rounded-xl font-black">PUBLICAR EM <span id="tabName">AVISOS</span></button>
+<p id="status" class="text-xs mt-2 text-white/40"></p>
+</div>
+
+<div id="lista" class="mt-8 max-w-lg"></div>
+
 <script>
-const API='/api/avisos';
-async function carregar(){let r=await fetch(API);let d=await r.json();document.getElementById('lista').innerHTML=d.map(a=>`<div class="bg-zinc-900 p-3 rounded-xl flex justify-between mt-2"><b>${a.titulo}</b><button onclick="apagar('${a.id}')" class="text-red-400">x</button></div>`).join('')}
-async function enviar(){let body={titulo:titulo.value,descricao:descricao.value,materia:materia.value||'GERAL',prioridade:prioridade.value,destaque:destaque.checked,novo:true,data_evento:new Date().toLocaleDateString()};document.getElementById('status').innerText='Enviando...';await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});document.getElementById('status').innerText='Publicado com sucesso!';carregar()}
-async function apagar(id){await fetch(API+'/'+id,{method:'DELETE'});carregar()}
-carregar();
+let tab='avisos';
+function setTab(t){tab=t;document.querySelectorAll('button').forEach(b=>b.classList.replace('bg-[#5865F2]','bg-white/10'));document.getElementById('btn-'+t).classList.replace('bg-white/10','bg-[#5865F2]');document.getElementById('tabName').innerText=t.toUpperCase();document.getElementById('formTitle').innerText='Novo em '+t; carregar();}
+
+async function carregar(){let r=await fetch('/api/'+tab);let d=await r.json();lista.innerHTML=d.map(a=>`<div class="bg-zinc-900 p-3 rounded-xl flex justify-between mt-2"><div><b>${a.titulo||a.nome}</b><p class="text-xs text-white/40">${a.descricao||''}</p></div><button onclick="apagar('${a.id}')" class="text-red-400 font-bold">X</button></div>`).join('') || 'Vazio'}
+async function enviar(){
+  let body={titulo:titulo.value,descricao:descricao.value,novo:true,data_evento:new Date().toLocaleDateString(),prioridade:prioridade.value,destaque:destaque.checked};
+  if(tab=='avisos') body.materia=extra.value||'GERAL';
+  if(tab=='materias') body.materia=extra.value;
+  if(tab=='trabalhos') body.data_entrega=extra.value;
+  if(tab=='agenda') body.data=extra.value;
+  status.innerText='Enviando...'; await fetch('/api/'+tab,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); status.innerText='Publicado em '+tab+'!'; titulo.value=''; descricao.value=''; carregar();
+}
+async function apagar(id){await fetch('/api/'+tab+'/'+id,{method:'DELETE'}); carregar();}
+setTab('avisos');
 </script></body></html>
