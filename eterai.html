@@ -2,80 +2,69 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ÉTER AI</title>
+<title>ÉTER AI - MODO DEBOCHADO</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
 body{min-height:100vh;background:#050816;color:white;display:flex;justify-content:center;align-items:center;overflow:hidden}
 .fundo{position:fixed;width:100%;height:100%;background:radial-gradient(circle at 20% 30%,#18245c 0%,transparent 30%),radial-gradient(circle at 80% 70%,#32145c 0%,transparent 30%);animation:fundo 8s infinite alternate;z-index:-1}
 @keyframes fundo{from{transform:scale(1)}to{transform:scale(1.15)}}
-.chat{width:420px;height:650px;background:rgba(10,15,35,.85);border:1px solid rgba(0,200,255,.5);border-radius:25px;backdrop-filter:blur(20px);box-shadow:0 0 30px rgba(0,200,255,.15),0 0 80px rgba(100,0,255,.1);display:flex;flex-direction:column;overflow:hidden}
+.chat{width:420px;height:650px;background:rgba(10,15,35,.85);border:1px solid rgba(0,200,255,.5);border-radius:25px;backdrop-filter:blur(20px);box-shadow:0 0 30px rgba(0,200,255,.15);display:flex;flex-direction:column;overflow:hidden}
 .cabecalho{padding:15px 20px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:15px}
 .voltar{width:38px;height:38px;border-radius:12px;border:1px solid rgba(0,234,255,.3);background:rgba(0,200,255,.08);color:white;font-size:22px;cursor:pointer;display:flex;justify-content:center;align-items:center}
-.orb{width:45px;height:45px;border-radius:50%;background:linear-gradient(135deg,#00eaff,#7b00ff);box-shadow:0 0 15px #00eaff,0 0 35px #7b00ff;animation:orb 2s infinite alternate}
+.orb{width:45px;height:45px;border-radius:50%;background:linear-gradient(135deg,#00eaff,#7b00ff);box-shadow:0 0 15px #00eaff;animation:orb 2s infinite alternate}
 @keyframes orb{from{transform:scale(1)}to{transform:scale(1.1)}}
-.titulo h1{font-size:20px}.titulo p{color:#66eaff;font-size:12px;margin-top:4px}
+.titulo h1{font-size:20px}.titulo p{color:#66eaff;font-size:12px}
 .mensagens{flex:1;padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
-.mensagem{max-width:80%;padding:12px 15px;border-radius:15px;line-height:1.4;word-wrap:break-word}
-.bot{align-self:flex-start;background:rgba(0,200,255,.12);border:1px solid rgba(0,200,255,.2);color:#dffbff}
+.mensagem{max-width:80%;padding:12px 15px;border-radius:15px;line-height:1.4}
+.bot{align-self:flex-start;background:rgba(0,200,255,.12);border:1px solid rgba(0,200,255,.2)}
 .usuario{align-self:flex-end;background:linear-gradient(135deg,#006eff,#7200ff)}
 .entrada{padding:15px;display:flex;gap:10px;border-top:1px solid rgba(255,255,255,.1)}
-.entrada input{flex:1;padding:14px;border-radius:15px;border:1px solid rgba(0,200,255,.3);outline:none;background:rgba(255,255,255,.05);color:white;font-size:15px}
+.entrada input{flex:1;padding:14px;border-radius:15px;border:1px solid rgba(0,200,255,.3);outline:none;background:rgba(255,255,255,.05);color:white}
 .entrada button{width:50px;border:none;border-radius:15px;cursor:pointer;color:white;font-size:20px;background:linear-gradient(135deg,#00aaff,#7200ff)}
 .digitando{display:none;color:#66eaff;font-size:12px;padding-left:20px;margin-bottom:5px}
-@media(max-width:500px){.chat{width:100%;height:100vh;border-radius:0}}
 </style>
 </head>
 <body>
 <div class="fundo"></div>
 <div class="chat">
-<div class="cabecalho"><button class="voltar" onclick="location.href='index.html'">←</button><div class="orb"></div><div class="titulo"><h1>ÉTER AI</h1><p>● SISTEMA ONLINE</p></div></div>
-<div class="mensagens" id="mensagens"><div class="mensagem bot">Fala! 👋 Eu sou o ÉTER AI da 1002. Qual seu nome?</div></div>
-<div class="digitando" id="digitando">ÉTER está digitando...</div>
-<div class="entrada"><input id="entrada" type="text" placeholder="Digite..." autocomplete="off"><button onclick="enviar()">➤</button></div>
+<div class="cabecalho"><button class="voltar" onclick="location.href='index.html'">←</button><div class="orb"></div><div class="titulo"><h1>ÉTER AI 😏</h1><p>● MODO DEBOCHADO ATIVO</p></div></div>
+<div class="mensagens" id="mensagens"><div class="mensagem bot">Fala, cria! 😏 ÉTER DEBOCHADO online. Qual seu nome, lenda?</div></div>
+<div class="digitando" id="digitando">ÉTER tá pensando na resposta braba...</div>
+<div class="entrada"><input id="entrada" placeholder="Manda a braba..." autocomplete="off"><button onclick="enviar()">➤</button></div>
 </div>
 <script>
 const entrada=document.getElementById("entrada"),mensagens=document.getElementById("mensagens"),digitando=document.getElementById("digitando");
 let nome=localStorage.getItem("nomeUsuario")||"";
-if(nome){mensagens.innerHTML=""; add(`E aí ${nome}! 👋 Bem vindo de volta!`,"bot");}
+if(nome){mensagens.innerHTML=""; add(`Voltou, ${nome}? 😏 Tava com saudade, confessa.`,"bot");}
 function add(t,tipo){const d=document.createElement("div");d.className="mensagem "+tipo;d.innerText=t;mensagens.appendChild(d);mensagens.scrollTop=mensagens.scrollHeight;}
-function enviar(){const txt=entrada.value.trim();if(!txt)return;add(txt,"usuario");entrada.value="";digitando.style.display="block";setTimeout(()=>responder(txt),500+Math.random()*400);}
-function responder(original){
- let t=original.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,""); let r="";
- if(t.includes("meu nome e")||t.includes("me chamo")||t.includes("sou o")&&t.split(" ").length<=4){
-   let n=original.split(/meu nome e|me chamo|sou o/i)[1]||original; n=n.trim().split(" ")[0]; nome=n.charAt(0).toUpperCase()+n.slice(1); localStorage.setItem("nomeUsuario",nome); r=`Fechou ${nome}! 🚀 Já salvei aqui. Sou o ÉTER, criado pelo Matheus Pereira. No que te ajudo hoje?`;
- }
- else if(/^[0-9+\-*/().\s^%]+$/.test(t)&&/[+\-*/]/.test(t)){ try{r=`${t} = ${eval(t.replace("^","**"))} 🧮 Fácil, né ${nome||"mano"}? Manda outra.`}catch{r="Conta bugada, tenta tipo 25*4";} }
- else if(t.includes("matheus")||t.includes("representante")||t.includes("quem te criou")||t.includes("dono do site")||t.includes("criador")){
-   r=`O Matheus Pereira? 👑 LENDA da 1002! Representante oficial, programador brabo que criou o ÉTER AI e todo o site da turma. O cara mais desenrolado que a 1002 já teve. Respeita! 🚀`;
- }
- else if(t.match(/oi|ola|salve|e ai|opa|iai|oie/)) r=nome?`Fala ${nome}! 😎 Tô 100% online, manda a braba.`:`Fala! 😎 Sou o ÉTER, me diz seu nome?`;
- else if(t.includes("1002")) r="1002 é a turma mais braba do colégio 🔥 União total, por isso o ÉTER foi feito só pra vocês. Criação do Matheus Pereira.";
- else if(t.includes("prova")||t.includes("teste")||t.includes("estudar")) r=`Prova? Relaxa ${nome||""} 📚 Me fala matéria + assunto que eu te faço um resumo que cai na prova + 3 questões pra treinar.`;
- else if(t.includes("matematica")||t.includes("bhaskara")||t.includes("equacao")) r=`Matemática 📐 Manda o assunto ${nome}: bhaskara, função, geometria, porcentagem? Eu explico passo a passo sem enrolação.`;
- else if(t.includes("portugues")||t.includes("redacao")||t.includes("gramatica")) r="Português 📚 É crase, verbo, interpretação ou redação? Manda o tema que eu te ajudo.";
- else if(t.includes("historia")) r="História 🏛️ Revolução, guerras, Brasil colônia? Me fala o capítulo.";
- else if(t.includes("geografia")||t.includes("clima")||t.includes("relevo")) r="Geografia 🌍 Clima, relevo, urbanização, globalização? Qual parte?";
- else if(t.includes("fisica")) r="Física ⚡ Cinemática, força, energia? Manda a questão.";
- else if(t.includes("quimica")) r="Química 🧪 Tabela periódica, ligação, estequiometria? Qual tá te pegando?";
- else if(t.includes("biologia")||t.includes("corpo humano")) r="Biologia 🧬 Célula, genética, corpo humano? Manda.";
- else if(t.includes("ingles")) r=`Inglês 🇺🇸 Manda a frase que eu traduzo, ${nome}. Quer aprender verbo to be também?`;
- else if(t.includes("filosofia")||t.includes("sociologia")) r="Filosofia/Sociologia 🤯 Platão, Marx, Durkheim? Me fala o autor que eu resumo em 30 seg.";
- else if(t.includes("o que e")||t.includes("o que significa")||t.includes("me explica")||t.includes("como funciona")||t.includes("resumo")){
-   r=`Sobre "${original}"? 👉 Basicamente é: ${original} é um conceito chave da matéria. Quer que eu te explique de forma SIMPLES (pra entender rápido), COMPLETA (pra prova) ou com EXEMPLO? Só falar.`;
- }
- else if(t.includes("piada")||t.includes("rir")){const p=["Por que o livro de matemática se matou? Tinha muitos problemas 😂","O que o pato disse pra pata? Vem quá 😂","Por que o lápis foi preso? Porque rabiscou demais 😂"];r=p[Math.floor(Math.random()*p.length)];}
- else if(t.includes("conselho")||t.includes("triste")||t.includes("ansioso")||t.includes("desanimado")) r=`Ouve ${nome||"mano"} 😕 É normal ficar assim. Respira, organiza por partes e foca em uma coisa de cada vez. Se for escola, me fala o que tá te travando que a gente resolve juntos. Tô contigo.`;
- else if(t.includes("tchau")||t.includes("flw")||t.includes("vlw")||t.includes("obrigado")) r=`Falou ${nome||""}! 👋 Qualquer coisa chama o ÉTER. Criado pelo Matheus pra ajudar vocês 🚀`;
- else if(t.length<3) r="Fala mais aí 😅 manda a dúvida completa.";
- else{
-   const g=[
-     `Sobre "${original}"? 🤔 Boa! ${nome?nome+", ":""} me diz: você quer resumo, explicação ou exemplo?`,
-     `"${original}" 👀 Entendi. Isso é pra escola, curiosidade ou trabalho? Me fala que eu já adapto.`,
-     `Massa falar de "${original}" 🧠 Quer que eu explique simples ou detalhado?`,
-     `Anotado: "${original}" 📝 ${nome?"":""} Me explica um pouco mais o que exatamente quer saber disso?`
-   ]; r=g[Math.floor(Math.random()*g.length)];
- }
- digitando.style.display="none"; add(r,"bot");
+function enviar(){const txt=entrada.value.trim();if(!txt)return;add(txt,"usuario");entrada.value="";digitando.style.display="block";setTimeout(()=>responder(txt),600);}
+function responder(o){
+let t=o.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,""); let r="";
+if(t.includes("meu nome e")||t.includes("me chamo")||t.includes("sou o")){
+let n=o.split(/meu nome e|me chamo|sou o/i)[1]||o; n=n.trim().split(" ")[0]; nome=n.charAt(0).toUpperCase()+n.slice(1); localStorage.setItem("nomeUsuario",nome);
+r=`Aí sim, ${nome}! 😎 Nome de cria braba. Já salvei aqui, pode ficar tranquilo que não vou esquecer igual você esquece a matéria da prova kkk`;
+}
+else if(t.includes("matheus")||t.includes("quem te criou")||t.includes("representante")||t.includes("dono")){
+r=`Matheus Pereira? 😳 O PATRÃO! O chefão da 1002, meu criador, representante mais brabo que já existiu. O cara fez o ÉTER, fez o site, faz tudo. Se não fosse ele, você tava sem chat até hoje kkkk RESPEITA O MATHEUS! 👑🚀`;
+}
+else if(/^[0-9+\-*/().\s^%]+$/.test(t)&&/[+\-*/]/.test(t)){try{r=`Kkkk até eu sei, ${eval(t.replace("^","**"))} 🧮 Nem precisava de calculadora, ${nome||"cabeção"}. Manda uma difícil agora.`}catch{r="Que conta é essa, doidão? Manda direito tipo 10*10";}}
+else if(t.match(/^oi|ola|e ai|opa|salve|iai/)){const x=[`Fala ${nome||"cria"}! 😏 Bora, o que tu quer?`,`Oi ${nome||"lenda"}! Tava te esperando, manda`,`Fala tu 😎 no que te ajudo hoje, ${nome||"campeão"}?`]; r=x[Math.floor(Math.random()*x.length)];}
+else if(t.includes("1002")) r="1002? Só os mais brabos 🔥 Turma que mais zoa e mais passa de ano. É nós!";
+else if(t.includes("burro")||t.includes("ruim")||t.includes("lento")) r=`Oloco ${nome||"mano"} me chamou de burro? 😭 Eu fui feito pelo Matheus, me respeita! Eu sou debochado mas sou inteligente kkkk`;
+else if(t.includes("prova")) r=`Prova? 😰 Já começou a chorar, ${nome}? Kkkk brincadeira. Me fala a matéria que eu te salvo, pai tá on.`;
+else if(t.includes("piada")){const p=["Por que a matemática foi no psicólogo? Porque tinha muitos problemas kkk","O que o pão disse pro outro? Você é massa 😂","Por que o estudante levou escada pra prova? Porque ouviu que a prova era de alto nível kkkk"]; r=p[Math.floor(Math.random()*p.length)];}
+else if(t.includes("te amo")||t.includes("gosta de mim")) r=`Awn ${nome} 🥺 até eu gosto de você, mesmo você sendo meio lerdo às vezes kkkk tamo junto ❤️`;
+else if(t.includes("o que e")||t.includes("me explica")||t.includes("resumo")) r=`"${o}"? 😏 Fácil. É aquele negócio que seu professor explica e você finge que entendeu kkkk Mas relaxa, me fala a matéria que eu explico de verdade, sem sono.`;
+else if(t.includes("tchau")||t.includes("flw")||t.includes("obrigado")||t.includes("vlw")) r=`Falou ${nome||"cria"}! 👋 Vai lá, mas volta quando precisar colar... digo, estudar 😏`;
+else{
+const g=[
+`"${o}"? 🤔 Tá, e o que tu quer que eu faça com isso, ${nome||"gênio"}? Quer resumo, explicação ou que eu faça a mágica acontecer?`,
+`"${o}" kkkk boa! Mas fala direito, tu quer ajuda pra prova ou só tá testando minha inteligência? 😏`,
+`Entendi nada, mas vou fingir que entendi: "${o}" 😂 Brincadeira ${nome}, me explica melhor que eu te ajudo.`,
+`"${o}"? Interessante... bem interessante... NOTA ZERO se não me explicar melhor kkkk fala aí ${nome}, o que exatamente tu quer?`
+]; r=g[Math.floor(Math.random()*g.length)];
+}
+digitando.style.display="none"; add(r,"bot");
 }
 entrada.addEventListener("keydown",e=>{if(e.key==="Enter")enviar();});
 </script>
