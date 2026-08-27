@@ -1,35 +1,43 @@
 const express = require('express');
+const fs = require('fs');
 const path = require('path');
-const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-app.use(cors());
 app.use(express.json());
+app.use(express.static(__dirname));
 
-let db = { avisos: [], alunos: [], aulas: [], trabalhos: [], agenda: [], materias: [] };
+let DB_PATH = path.join(__dirname, 'db.json');
+function lerDB(){ try{ return JSON.parse(fs.readFileSync(DB_PATH,'utf8')) }catch(e){ return {alunos:[],avisos:[],materias:[],trabalhos:[],agenda:[]} } }
+function salvarDB(db){ fs.writeFileSync(DB_PATH, JSON.stringify(db,null,2)); }
+let db = lerDB();
 
-function criarRotas(nome) {
-  app.get(`/api/${nome}`, (req, res) => res.json(db[nome] || []));
-  app.post(`/api/${nome}`, (req, res) => {
-    const item = { id: Date.now().toString(), novo:true,...req.body };
-    db[nome].unshift(item);
+function criarRotas(tipo){
+  app.get('/api/'+tipo, (req,res)=> res.json(db[tipo]||[]) );
+  app.post('/api/'+tipo, (req,res)=>{
+    let item = {id: Date.now().toString(),...req.body, data_criacao: new Date().toISOString()};
+    if(!db[tipo]) db[tipo]=[];
+    db[tipo].push(item);
+    salvarDB(db);
     res.json(item);
   });
-  app.delete(`/api/${nome}/:id`, (req, res) => {
-    db[nome] = db[nome].filter(i => i.id!= req.params.id);
-    res.json({ok:true});
-  });
-  app.put(`/api/${nome}/:id/lido`, (req, res) => {
-    const item = db[nome].find(i => i.id == req.params.id);
-    if(item) item.novo = false;
+  app.delete('/api/'+tipo+'/:id', (req,res)=>{
+    db[tipo] = (db[tipo]||[]).filter(i=> i.id!= req.params.id);
+    salvarDB(db);
     res.json({ok:true});
   });
 }
 
-['avisos','alunos','aulas','trabalhos','agenda','materias'].forEach(criarRotas);
+criarRotas('avisos');
+criarRotas('materias');
+criarRotas('trabalhos');
+criarRotas('agenda');
+criarRotas('alunos');
 
-app.use(express.static(__dirname));
-app.get('/', (req,res)=> res.sendFile(path.join(__dirname,'turma 1002.html')));
+app.post('/api/eter', (req,res)=>{
+  res.json({resposta: `ÉTER AI: Você perguntou "${req.body.pergunta}". Ainda estou em beta, mas estude focado nisso que cai na prova!`})
+});
 
-app.listen(PORT, ()=> console.log('ON em '+PORT));
+app.get('/', (req,res)=> res.sendFile(path.join(__dirname,'index.html')));
+
+app.listen(PORT, ()=> console.log('1002 ONLINE NA PORTA '+PORT));
