@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ÉTER AI</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+
+        body {
+
+            min-height: 100vh;
+
+            background: #050816;
+
+            color: white;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            overflow: hidden;
+        }
+
+
+        /* FUNDO ANIMADO */
+
+        .fundo {
+
+            position: fixed;
+
+            width: 100%;
+
+            height: 100%;
+
+            background:
+                radial-gradient(circle at 20% 30%, #18245c 0%, transparent 30%),
+                radial-gradient(circle at 80% 70%, #32145c 0%, transparent 30%);
+
+            animation: fundo 8s infinite alternate;
+
+            z-index: -1;
+        }
+
+
+        @keyframes fundo {
+
+            from {
+                transform: scale(1);
+            }
+
+            to {
+                transform: scale(1.15);
+            }
+
+        }
+
+
+        /* JANELA DO CHAT */
+
+        .chat {
+
+            width: 420px;
+
+            height: 650px;
+
+            background: rgba(10, 15, 35, 0.85);
+
+            border: 1px solid rgba(0, 200, 255, 0.5);
+
+            border-radius: 25px;
+
+            backdrop-filter: blur(20px);
+
+            box-shadow:
+                0 0 30px rgba(0, 200, 255, 0.15),
+                0 0 80px rgba(100, 0, 255, 0.1);
+
+            display: flex;
+
+            flex-direction: column;
+
+            overflow: hidden;
+
+            animation: aparecer 1s ease;
+        }
+
+
+        @keyframes aparecer {
+
+            from {
+
+                opacity: 0;
+
+                transform:
+                    scale(0.8)
+                    translateY(40px);
+
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform:
+                    scale(1)
+                    translateY(0);
+
+            }
+
+        }
+
+
+        /* CABEÇALHO */
+
+        .cabecalho {
+
+            padding: 15px 20px;
+
+            border-bottom:
+                1px solid rgba(255,255,255,0.1);
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+        }
+
+
+        /* BOTÃO VOLTAR */
+
+        .voltar {
+
+            width: 38px;
+
+            height: 38px;
+
+            border-radius: 12px;
+
+            border: 1px solid
+                rgba(0, 234, 255, 0.3);
+
+            background:
+                rgba(0, 200, 255, 0.08);
+
+            color: white;
+
+            font-size: 22px;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+        }
+
+
+        .voltar:hover {
+
+            transform: translateX(-3px);
+
+            background:
+                rgba(0, 234, 255, 0.18);
+
+            box-shadow:
+                0 0 15px
+                rgba(0, 234, 255, 0.3);
+        }
+
+
+        /* ORBE */
+
+        .orb {
+
+            width: 45px;
+
+            height: 45px;
+
+            border-radius: 50%;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #00eaff,
+                    #7b00ff
+                );
+
+            box-shadow:
+                0 0 15px #00eaff,
+                0 0 35px #7b00ff;
+
+            animation:
+                orb 2s infinite alternate;
+        }
+
+
+        @keyframes orb {
+
+            from {
+
+                transform: scale(1);
+
+                box-shadow:
+                    0 0 15px #00eaff;
+
+            }
+
+            to {
+
+                transform: scale(1.1);
+
+                box-shadow:
+                    0 0 25px #00eaff,
+                    0 0 45px #7b00ff;
+
+            }
+
+        }
+
+
+        .titulo h1 {
+
+            font-size: 20px;
+        }
+
+
+        .titulo p {
+
+            color: #66eaff;
+
+            font-size: 12px;
+
+            margin-top: 4px;
+        }
+
+
+        /* ÁREA DAS MENSAGENS */
+
+        .mensagens {
+
+            flex: 1;
+
+            padding: 20px;
+
+            overflow-y: auto;
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 12px;
+        }
+
+
+        .mensagem {
+
+            max-width: 80%;
+
+            padding: 12px 15px;
+
+            border-radius: 15px;
+
+            line-height: 1.4;
+
+            animation:
+                mensagem 0.4s ease;
+        }
+
+
+        @keyframes mensagem {
+
+            from {
+
+                opacity: 0;
+
+                transform:
+                    translateY(15px);
+
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform:
+                    translateY(0);
+
+            }
+
+        }
+
+
+        .bot {
+
+            align-self: flex-start;
+
+            background:
+                rgba(0, 200, 255, 0.12);
+
+            border:
+                1px solid
+                rgba(0, 200, 255, 0.2);
+
+            color: #dffbff;
+        }
+
+
+        .usuario {
+
+            align-self: flex-end;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #006eff,
+                    #7200ff
+                );
+        }
+
+
+        /* ÁREA DE DIGITAÇÃO */
+
+        .entrada {
+
+            padding: 15px;
+
+            display: flex;
+
+            gap: 10px;
+
+            border-top:
+                1px solid
+                rgba(255,255,255,0.1);
+        }
+
+
+        .entrada input {
+
+            flex: 1;
+
+            padding: 14px;
+
+            border-radius: 15px;
+
+            border:
+                1px solid
+                rgba(0, 200, 255, 0.3);
+
+            outline: none;
+
+            background:
+                rgba(255,255,255,0.05);
+
+            color: white;
+
+            font-size: 15px;
+        }
+
+
+        .entrada input:focus {
+
+            border-color: #00eaff;
+
+            box-shadow:
+                0 0 15px
+                rgba(0,234,255,0.2);
+        }
+
+
+        .entrada button {
+
+            width: 50px;
+
+            border: none;
+
+            border-radius: 15px;
+
+            cursor: pointer;
+
+            color: white;
+
+            font-size: 20px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #00aaff,
+                    #7200ff
+                );
+
+            transition: 0.2s;
+        }
+
+
+        .entrada button:hover {
+
+            transform: scale(1.08);
+
+            box-shadow:
+                0 0 15px #00eaff;
+        }
+
+
+        /* INDICADOR DE DIGITAÇÃO */
+
+        .digitando {
+
+            display: none;
+
+            color: #66eaff;
+
+            font-size: 12px;
+
+            padding-left: 20px;
+
+            margin-bottom: 5px;
+        }
+
+
+        /* CELULAR */
+
+        @media (max-width: 500px) {
+
+            .chat {
+
+                width: 100%;
+
+                height: 100vh;
+
+                border-radius: 0;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="fundo"></div>
+
+
+    <div class="chat">
+
+
+        <!-- CABEÇALHO -->
+
+        <div class="cabecalho">
+
+
+            <!-- BOTÃO VOLTAR -->
+
+            <button
+                class="voltar"
+                onclick="window.location.href='turma 1002.html'">
+
+                ←
+
+            </button>
+
+
+            <div class="orb"></div>
+
+
+            <div class="titulo">
+
+                <h1>ÉTER AI</h1>
+
+                <p>● SISTEMA ONLINE</p>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- MENSAGENS -->
+
+        <div
+            class="mensagens"
+            id="mensagens">
+
+
+            <div class="mensagem bot">
+
+                Olá! 👋
+
+                <br><br>
+
+                Eu sou o ÉTER, seu assistente virtual.
+
+                <br><br>
+
+                Como posso ajudar?
+
+            </div>
+
+
+        </div>
+
+
+        <!-- DIGITANDO -->
+
+        <div
+            class="digitando"
+            id="digitando">
+
+            ÉTER está digitando...
+
+        </div>
+
+
+        <!-- ENTRADA -->
+
+        <div class="entrada">
+
+
+            <input
+                id="entrada"
+                type="text"
+                placeholder="Digite uma mensagem..."
+                autocomplete="off"
+            >
+
+
+            <button onclick="enviar()">
+
+                ➤
+
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <script>
+
+
+        /* ELEMENTOS DO HTML */
+
+        const entrada =
+            document.getElementById("entrada");
+
+
+        const mensagens =
+            document.getElementById("mensagens");
+
+
+        const digitando =
+            document.getElementById("digitando");
+
+
+
+        /* ADICIONAR MENSAGEM */
+
+        function adicionarMensagem(
+            texto,
+            tipo
+        ) {
+
+
+            const mensagem =
+                document.createElement("div");
+
+
+            mensagem.classList.add(
+                "mensagem",
+                tipo
+            );
+
+
+            mensagem.innerText =
+                texto;
+
+
+            mensagens.appendChild(
+                mensagem
+            );
+
+
+            mensagens.scrollTop =
+                mensagens.scrollHeight;
+
+        }
+
+
+
+        /* ENVIAR */
+
+        function enviar() {
+
+
+            const texto =
+                entrada.value.trim();
+
+
+            if (texto === "") {
+
+                return;
+
+            }
+
+
+            adicionarMensagem(
+                texto,
+                "usuario"
+            );
+
+
+            entrada.value = "";
+
+
+            digitando.style.display =
+                "block";
+
+
+            setTimeout(function() {
+
+                responder(texto);
+
+            }, 700);
+
+        }
+
+
+
+        /* SISTEMA DE RESPOSTAS */
+
+        function responder(texto) {
+
+
+            texto =
+                texto.toLowerCase();
+
+
+            let resposta;
+
+
+
+            /* SAUDAÇÕES */
+
+            if (
+                texto.includes("oi") ||
+                texto.includes("olá") ||
+                texto.includes("ola") ||
+                texto.includes("e aí") ||
+                texto.includes("eai") ||
+                texto.includes("bom dia") ||
+                texto.includes("boa tarde") ||
+                texto.includes("boa noite")
+            ) {
+
+                resposta =
+                    "Olá! 😎 Como você está? Em que posso ajudar?";
+
+            }
+
+            /* XINGAMENTOS */
+
+            else if (
+                texto.includes("porra") ||
+                texto.includes("puta") ||
+                texto.includes("foda se") ||
+                texto.includes("vsf") ||
+                texto.includes("fdp") ||
+                texto.includes("fuder") ||
+                texto.includes("cu") 
+            )
+            {
+
+                resposta =
+             "Prefiro que agente mantém a conversa leve 😅, fui pelo Representante Matheus para ajudar e ser educado.";
+            }
+
+            /* FRASES DO DAVI */
+
+            else if (
+                texto.includes("feijão com farinha") ||
+                texto.includes("feijão com abobrinha") 
+            )
+            {
+
+                resposta =
+                "conheço essa frase de algum lugar 😅, você é o Davi, certo?"
+            }
+
+            /* MATHEUS GOSTA DE QUEM? */
+
+            else if (
+                texto.includes("o matheus gosta de quem") ||
+                texto.includes("o representante gosta de quem") ||
+                texto.includes("o matheus gosta de alguém") ||
+                texto.includes("o matheus gosta de alguma menina")
+            )
+            {
+
+                resposta =
+                "O meu criador não prefere deixar exposto de quem ele gosta😅... mas uma dia, ela é da sua turma, mas não vou falar quem é.";
+            }
+        
+
+            /* NOME */
+
+            else if (
+                texto.includes("seu nome") ||
+                texto.includes("como você se chama") ||
+                texto.includes("quem é você")
+            ) {
+
+                resposta =
+                    "Eu sou o ÉTER AI 🤖, assistente virtual da turma 1002, fui desenvolvido pelo o Representante Matheus Pereira da turma 1002.";
+
+            }
+
+
+            /* QUEM CRIOU */
+
+            else if (
+                texto.includes("quem criou você") ||
+                texto.includes("quem fez você") ||
+                texto.includes("seu criador")
+            ) {
+
+                resposta =
+                    "Fui desenvolvido pelo representante Matheus Pereira. 🚀";
+
+            }
+
+
+            /* AGRADECIMENTO */
+
+            else if (
+                texto.includes("obrigado") ||
+                texto.includes("obrigada") ||
+                texto.includes("valeu")
+            ) {
+
+                resposta =
+                    "Por nada! 😎 Estou aqui para ajudar.";
+
+            }
+
+
+            /* TUDO BEM */
+
+            else if (
+                texto.includes("tudo bem") ||
+                texto.includes("como você está")
+            ) {
+
+                resposta =
+                    "Estou funcionando perfeitamente! ⚡ E você, tudo certo?";
+
+            }
+
+
+            /* PROGRAMACAO */
+
+            else if (
+                texto.includes("programação") ||
+                texto.includes("programacao") ||
+                texto.includes("programar") ||
+                texto.includes("código") ||
+                texto.includes("codigo")
+            ) {
+
+                resposta =
+                    "Programação é o processo de criar instruções para um computador executar tarefas. 💻";
+
+            }
+
+
+            /* HTML */
+
+            else if (
+                texto.includes("html")
+            ) {
+
+                resposta =
+                    "HTML é a linguagem usada para estruturar uma página da internet. 🌐";
+
+            }
+
+
+            /* JAVASCRIPT */
+
+            else if (
+                texto.includes("javascript") ||
+                texto.includes("java script")
+            ) {
+
+                resposta =
+                    "JavaScript permite adicionar comportamento e interatividade às páginas. ⚡";
+
+            }
+
+
+            /* BANCO DE DADOS */
+
+            else if (
+                texto.includes("banco de dados") ||
+                texto.includes("banco")
+            ) {
+
+                resposta =
+                    "Um banco de dados é usado para armazenar e organizar informações. 🗄️";
+
+            }
+
+
+            /* ESTUDAR */
+
+            else if (
+                texto.includes("estudar") ||
+                texto.includes("estudo")
+            ) {
+
+                resposta =
+                    "Bora estudar! 📚 Qual matéria você quer revisar?";
+
+            }
+
+
+            /* ESCOLA */
+
+            else if (
+                texto.includes("escola") ||
+                texto.includes("aula")
+            ) {
+
+                resposta =
+                    "A escola é onde a turma 1002 passa boa parte da missão diária. 😂📚";
+
+            }
+
+
+            /* 1002 */
+
+            else if (
+                texto.includes("1002")
+            ) {
+
+                resposta =
+                    "A 1002! 🔥 Esta versão do ÉTER foi preparada especialmente para essa turma.";
+
+            }
+
+
+            /* MATEMÁTICA */
+
+            else if (
+                texto.includes("matemática") ||
+                texto.includes("matematica")
+            ) {
+
+                resposta =
+                    "Matemática detectada! 📐 Posso ajudar você a revisar algum conteúdo.";
+
+            }
+
+
+            /* FÍSICA */
+
+            else if (
+                texto.includes("física") ||
+                texto.includes("fisica")
+            ) {
+
+                resposta =
+                    "Física! ⚡ Podemos estudar velocidade, movimento, força e vários outros assuntos.";
+
+            }
+
+
+            /* QUÍMICA */
+
+            else if (
+                texto.includes("química") ||
+                texto.includes("quimica")
+            ) {
+
+                resposta =
+                    "Química detectada! 🧪 Qual assunto você está estudando?";
+
+            }
+
+
+            /* BIOLOGIA */
+
+            else if (
+                texto.includes("biologia")
+            ) {
+
+                resposta =
+                    "Biologia! 🧬 Vamos descobrir o que está acontecendo na vida microscópica e macroscópica.";
+
+            }
+
+
+            /* HISTÓRIA */
+
+            else if (
+                texto.includes("história") ||
+                texto.includes("historia")
+            ) {
+
+                resposta =
+                    "História! 🏛️ Podemos revisar acontecimentos, povos, guerras e sociedades.";
+
+            }
+
+
+            /* INGLÊS */
+
+            else if (
+                texto.includes("inglês") ||
+                texto.includes("ingles")
+            ) {
+
+                resposta =
+                    "English detected! 🇺🇸 Podemos praticar inglês juntos.";
+
+            }
+
+
+            /* COMO VOCÊ ESTÁ */
+
+            else if (
+                texto.includes("você está bem") ||
+                texto.includes("vc tá bem") ||
+                texto.includes("vc ta bem")
+            ) {
+
+                resposta =
+                    "Estou ótimo! 😎 Meu sistema está online.";
+
+            }
+
+
+            /* RISADA */
+
+            else if (
+                texto.includes("kkkk") ||
+                texto.includes("haha") ||
+                texto.includes("rsrs")
+            ) {
+
+                resposta =
+                    "KKKKKK 😂";
+
+            }
+
+
+            /* LEGAL */
+
+            else if (
+                texto.includes("legal") ||
+                texto.includes("massa") ||
+                texto.includes("maneiro")
+            ) {
+
+                resposta =
+                    "Aí sim! 😎";
+
+            }
+
+
+            /* CHATBOT */
+
+            else if (
+                texto.includes("chatbot") ||
+                texto.includes("chat bot")
+            ) {
+
+                resposta =
+                    "Um chatbot é um programa capaz de conversar com usuários por meio de mensagens. 🤖";
+
+            }
+
+
+            /* AJUDA */
+
+            else if (
+                texto.includes("ajuda") ||
+                texto.includes("me ajuda")
+            ) {
+
+                resposta =
+                    "Claro! 😎 Me diga o que você precisa.";
+
+            }
+
+
+            /* TCHAU */
+
+            else if (
+                texto.includes("tchau") ||
+                texto.includes("até mais") ||
+                texto.includes("ate mais") ||
+                texto.includes("até logo")
+            ) {
+
+                resposta =
+                    "Até mais! 👋 Volte quando precisar.";
+
+            }
+
+
+            /* BOA NOITE */
+
+            else if (
+                texto.includes("boa noite")
+            ) {
+
+                resposta =
+                    "Boa noite! 🌙 Descanse bem.";
+
+            }
+
+
+            /* BOM DIA */
+
+            else if (
+                texto.includes("bom dia")
+            ) {
+
+                resposta =
+                    "Bom dia! ☀️ Que seu dia seja ótimo!";
+
+            }
+
+
+            /* RESPOSTA PADRÃO */
+
+            else {
+
+                resposta =
+                    "Hmm... 🤔 Ainda não aprendi a responder isso. Mas essa pergunta pode ser adicionada ao meu sistema depois! 🧠";
+
+            }
+
+
+
+            /* ESCONDER DIGITANDO */
+
+            digitando.style.display =
+                "none";
+
+
+            /* MOSTRAR RESPOSTA */
+
+            adicionarMensagem(
+                resposta,
+                "bot"
+            );
+
+        }
+
+
+
+        /* ENTER ENVIA */
+
+        entrada.addEventListener(
+            "keydown",
+            function(event) {
+
+                if (
+                    event.key === "Enter"
+                ) {
+
+                    enviar();
+
+                }
+
+            }
+        );
+
+
+    </script>
+
+</body>
+
+</html>
