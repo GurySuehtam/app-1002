@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>History Gamer • 1002</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@800;900&display=swap');
+*{font-family:'Inter',sans-serif;box-sizing:border-box}
+body{margin:0;background:#0c0c12;color:#fff;min-height:100vh}
+.wrap{max-width:440px;margin:0 auto;min-height:100vh;padding:18px;display:flex;flex-direction:column}
+.top{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:900}
+.btn-back{width:40px;height:40px;border-radius:999px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;color:#fff;text-decoration:none}
+.btn-study{background:rgba(88,101,242,.25);border:1px solid rgba(88,101,242,.5);color:#a5b4fc;padding:7px 14px;border-radius:999px;font-size:11px;font-weight:900;cursor:pointer;display:flex;gap:6px;align-items:center}
+.bar{height:8px;background:rgba(255,255,255,.15);border-radius:999px;margin-top:16px;overflow:hidden}
+.bar-fill{height:100%;background:#fff;transition:.5s;width:8%}
+.card-q{background:#fff;color:#000;border-radius:26px;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.5);margin-top:20px}
+.card-q h1{font-size:27px;line-height:0.92;letter-spacing:-0.03em;margin:10px 0 0 0}
+.opts{margin-top:18px;display:flex;flex-direction:column;gap:12px}
+.btn-opt{width:100%;background:#1e1e2a;color:#fff;border:2px solid rgba(255,255,255,.10);border-radius:20px;padding:18px;display:flex;align-items:center;gap:14px;text-align:left;cursor:pointer}
+.btn-opt span{color:#fff;font-size:15px;font-weight:800;line-height:1.2}
+.badge{width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.14);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;flex-shrink:0}
+.feed{margin-top:14px;border-radius:16px;padding:14px;text-align:center;font-weight:900}
+.result-card{background:#fff;color:#000;border-radius:28px;padding:22px;margin-top:22px;text-align:left}
+.result-score{background:#000;color:#fff;border-radius:20px;padding:18px;text-align:center;margin-top:18px}
+.result-score b{font-size:54px;line-height:1;letter-spacing:-0.05em;display:block}
+.name-box{margin-top:22px;background:#181825;border:1px solid rgba(255,255,255,.12);border-radius:24px;padding:18px;position:relative}
+.name-input{width:100%;margin-top:14px;padding:18px;border-radius:999px;border:0;background:#fff;color:#000;font-size:17px;font-weight:900;text-align:center;outline:none}
+.btn-send{width:100%;margin-top:14px;background:linear-gradient(180deg,#2cff7a,#22c55e);color:#000;border:0;border-radius:999px;padding:20px;font-size:17px;font-weight:900;cursor:pointer;box-shadow:0 12px 30px rgba(34,197,94,.35);display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-secondary{width:100%;margin-top:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;border-radius:999px;padding:16px;font-size:14px;font-weight:800;cursor:pointer}
+
+/* CHATBOT */
+#chatOverlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(12px);z-index:50;display:none;align-items:end;justify-content:center;padding:0}
+#chatBox{width:100%;max-width:440px;height:85vh;background:#11111a;border-radius:28px 28px 0 0;border:1px solid rgba(255,255,255,.12);display:flex;flex-direction:column;overflow:hidden}
+.chat-header{padding:18px 20px;background:#181825;border-bottom:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center}
+.chat-msgs{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px}
+.msg{max-width:82%;padding:14px 16px;border-radius:20px;font-size:14px;line-height:1.3;font-weight:600}
+.msg-bot{background:#fff;color:#000;border-bottom-left-radius:6px}
+.msg-user{background:#5865F2;color:#fff;align-self:flex-end;border-bottom-right-radius:6px}
+.chat-input-area{padding:14px;background:#181825;border-top:1px solid rgba(255,255,255,.08);display:flex;gap:10px}
+.chat-input{flex:1;background:#fff;border:0;border-radius:999px;padding:14px 18px;font-size:14px;font-weight:700;outline:none;color:#000}
+.chat-send{width:46px;height:46px;border-radius:999px;background:#22c55e;border:0;font-size:18px;cursor:pointer}
+.sug{font-size:11px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);padding:8px 12px;border-radius:999px;cursor:pointer;color:#fff}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a href="turma 1002.html" class="btn-back">←</a>
+    <button onclick="openChat()" class="btn-study">📚 ESTUDAR</button>
+    <span id="xp" style="background:#fff;color:#000;padding:6px 12px;border-radius:999px">0 XP</span>
+  </div>
+  <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:11px;font-weight:900;opacity:.6"><span id="fase">FASE 1/11</span><span>TURMA 1002</span></div>
+  <div class="bar"><div id="bar" class="bar-fill"></div></div>
+
+  <div id="game" style="flex:1"></div>
+  <div id="feed" class="feed" style="display:none"></div>
+</div>
+
+<!-- CHATBOT MODAL -->
+<div id="chatOverlay" onclick="if(event.target===this)closeChat()">
+  <div id="chatBox">
+    <div class="chat-header">
+      <div style="display:flex;gap:10px;align-items:center"><div style="width:36px;height:36px;background:#fff;color:#000;border-radius:999px;display:flex;align-items:center;justify-content:center">🏛️</div><div><div style="font-size:13px;font-weight:900">PROFESSOR HISTÓRIA IA</div><div style="font-size:11px;opacity:.5">Responde só sobre Grécia e Roma</div></div></div>
+      <div onclick="closeChat()" style="width:32px;height:32px;background:rgba(255,255,255,.1);border-radius:999px;display:flex;align-items:center;justify-content:center;cursor:pointer">✕</div>
+    </div>
+    <div id="msgs" class="chat-msgs"></div>
+    <div style="padding:0 14px 8px;display:flex;gap:6px;flex-wrap:wrap" id="sugs"></div>
+    <div class="chat-input-area">
+      <input id="chatIn" class="chat-input" placeholder="Pergunte algo... ex: o que é Pax Romana?" onkeydown="if(event.key==='Enter')send()">
+      <button onclick="send()" class="chat-send">➤</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let raw=[
+{q:"O que é uma Cidade-Estado?",ops:["Cidade com governo próprio, como Atenas e Esparta","Um bairro de uma cidade grande","Uma vila sem leis","Um império gigante"],c:0},
+{q:"Como era a Democracia em Atenas?",ops:["Só homens livres atenienses com +18 anos","Todo mundo votava, inclusive escravos","Só mulheres e crianças votavam","Só estrangeiros votavam"],c:0},
+{q:"Característica da Civilização Grega?",ops:["Berço da democracia, filosofia, teatro e Olimpíadas","Criaram o feudalismo","Eram uma sociedade igualitária sem classes","Viviam isolados sem contato externo"],c:0},
+{q:"Diferença Ateniense vs Atual?",ops:["Atenas era DIRETA, hoje é REPRESENTATIVA","São idênticas","Atenas votava em deputados pela internet","Atual é direta, Atenas era representativa"],c:0},
+{q:"Importância de Ilíada e Odisseia?",ops:["Obras de Homero, base da cultura e educação grega","Livros de matemática","Manuais de guerra romana","Receitas de comida grega"],c:0},
+{q:"Relação solo e economia grega?",ops:["Solo montanhoso e pobre → viraram navegadores e comerciantes","Solo fértil → ficaram ricos só plantando trigo","Não precisavam trabalhar","Viviam só de guerras"],c:0},
+{q:"Qual o legado dos Gregos?",ops:["Democracia, filosofia, teatro, arquitetura e Olimpíadas","Pax Romana","Criação do feudalismo","Invenção da pólvora"],c:0},
+{q:"Exército Romano e escravidão?",ops:["Conquistas traziam prisioneiros como escravos","Não tinham escravos em Roma","Escravos eram voluntários","Só usavam escravos na agricultura"],c:0},
+{q:"Como era a Sociedade Romana?",ops:["Patrícios, Plebeus e Escravos","Todos eram iguais","Só existiam reis e rainhas","Só escravos e imperador"],c:0},
+{q:"O que foi Pax Romana?",ops:["200 anos de paz e prosperidade no Império Romano","Uma guerra contra a Grécia","Nome de uma deusa romana","Um tratado com os bárbaros"],c:0},
+{q:"Quem eram os bárbaros para Roma?",ops:["Povos germanos que viviam fora e derrubaram Roma","Povos que não sabiam falar","Os próprios romanos do interior","Um grupo de filósofos gregos"],c:0},
+];
+function shuffle(arr){
+  let a=arr.map((op,i)=>({op,i}));
+  for(let k=a.length-1;k>0;k--){let j=Math.floor(Math.random()*(k+1)); [a[k],a[j]]=[a[j],a[k]];}
+  return {ops:a.map(x=>x.op), c:a.findIndex(x=>x.i===0)};
+}
+let perguntas=raw.map(p=>{let s=shuffle(p.ops); return {q:p.q, ops:s.ops, c:s.c}});
+let atual=0, acertos=0;
+const letras=['A','B','C','D'];
+function render(){
+  fase.textContent=`FASE ${atual+1}/${perguntas.length}`;
+  xp.textContent=`${acertos*120} XP`;
+  bar.style.width=`${(atual/perguntas.length)*100}%`;
+  let p=perguntas[atual];
+  feed.style.display='none';
+  game.innerHTML=`
+    <div class="card-q">
+      <div style="display:inline-block;background:#000;color:#fff;padding:4px 10px;border-radius:999px;font-size:10px;letter-spacing:.15em;font-weight:900">PERGUNTA ${atual+1}</div>
+      <h1>${p.q}</h1>
+    </div>
+    <div class="opts">${p.ops.map((op,i)=>`<button id="b${i}" onclick="check(${i})" class="btn-opt"><div id="badge${i}" class="badge">${letras[i]}</div><span>${op}</span></button>`).join('')}</div>`;
+}
+function check(i){
+  let p=perguntas[atual];
+  document.querySelectorAll('.btn-opt').forEach(b=>b.disabled=true);
+  let feedEl=feed;
+  if(i===p.c){acertos++; let b=document.getElementById('b'+i); b.style.background='#22c55e'; b.style.borderColor='#22c55e'; b.querySelector('span').style.color='#000'; document.getElementById('badge'+i).style.background='#000'; document.getElementById('badge'+i).textContent='✓'; feedEl.style.display='block'; feedEl.style.background='#22c55e'; feedEl.style.color='#000'; feedEl.textContent='✅ ACERTOU!';}
+  else{let b=document.getElementById('b'+i); b.style.background='#ef4444'; b.style.borderColor='#ef4444'; document.getElementById('badge'+i).textContent='✕'; document.getElementById('badge'+i).style.background='#fff'; document.getElementById('badge'+i).style.color='#ef4444'; let ok=document.getElementById('b'+p.c); ok.style.background='#22c55e'; ok.style.borderColor='#22c55e'; ok.querySelector('span').style.color='#000'; document.getElementById('badge'+p.c).style.background='#000'; document.getElementById('badge'+p.c).textContent='✓'; feedEl.style.display='block'; feedEl.style.background='#ef4444'; feedEl.style.color='#fff'; feedEl.textContent='❌ A CERTA FICOU VERDE';}
+  setTimeout(()=>{atual++; if(atual<perguntas.length) render(); else fim();}, 1100);
+}
+function fim(){
+  let nota=(acertos/perguntas.length*10).toFixed(1); let pct=Math.round(acertos/perguntas.length*100);
+  bar.style.width='100%'; bar.style.background='#22c55e';
+  game.innerHTML=`
+    <div style="text-align:center">
+      <div style="width:100px;height:100px;margin:0 auto;background:#fff;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:50px">🏆</div>
+      <h1 style="font-size:38px;font-weight:900;margin-top:18px;line-height:0.9">${nota>=7?'ZEROU O GAME!':'QUASE LÁ!'}</h1>
+      <div class="result-card"><div style="display:flex;justify-content:space-between;font-size:14px"><span style="opacity:.5">Acertos</span><b>${acertos}/${perguntas.length}</b></div><div style="display:flex;justify-content:space-between;font-size:14px;margin-top:8px"><span style="opacity:.5">Aproveitamento</span><b>${pct}%</b></div><div class="result-score"><div style="font-size:11px;opacity:.6;letter-spacing:.15em;font-weight:900">NOTA FINAL</div><b>${nota}</b><div style="font-size:12px;opacity:.6;margin-top:4px">${acertos} ÷ ${perguntas.length} × 10 = ${nota}</div></div></div>
+      <div class="name-box"><div style="display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;background:#fff;color:#000;border-radius:999px;display:flex;align-items:center;justify-content:center;font-weight:900">👤</div><div><div style="font-size:13px;font-weight:900;letter-spacing:.08em">IDENTIFIQUE-SE, GAMER</div><div style="font-size:11px;opacity:.6">Seu nome vai pro ranking da 1002</div></div></div><input id="nome" maxlength="22" placeholder="Digite seu nome aqui..." class="name-input"></div>
+      <button onclick="zap(${nota})" class="btn-send">ENVIAR PARA O REPRESENTANTE <span style="font-size:20px">🚀</span></button>
+      <button onclick="openChat()" class="btn-secondary">📚 TIREI DÚVIDA? FALAR COM PROFESSOR IA</button>
+    </div>`;
+  feed.style.display='none';
+}
+function zap(nota){let nome=document.getElementById('nome').value.trim(); if(!nome){alert('Digite seu nome primeiro! 👇'); return;} let msg=`Olá! Sou ${nome} da 1002 🎮%0A%0AHistory Gamer:%0A✅ Acertos: ${acertos}/11%0A🏆 Nota: ${nota}/10`; window.open(`https://wa.me/5521981299396?text=${msg}`,'_blank');}
+render();
+
+// ===== CHATBOT INTELIGENTE =====
+const knowledge={
+"pax romana":"Pax Romana foi um período de 200 anos de PAZ (27 a.C a 180 d.C). Roma dominava tudo, não tinha guerra, comércio bombando, estradas, aquedutos. Foi a era de ouro romana!",
+"cidade estado":"Cidade-Estado = polis grega. Cada cidade era um país! Tinha governo, exército e leis próprias. Ex: Atenas (democracia) e Esparta (militar).",
+"democracia atenas":"Em Atenas votava só homem livre ateniense com +18 anos nascido lá. Mulheres, escravos e estrangeiros não votavam. Era democracia DIRETA, ia pra praça votar na hora!",
+"diferença direta representativa":"Atenas era DIRETA (vota direto na lei). Hoje é REPRESENTATIVA (vota em deputado que vota por você).",
+"iliada odisseia":"Ilíada (Guerra de Troia) e Odisseia (volta de Ulisses). Escritas por Homero. Eram a Bíblia dos gregos, ensinavam moral, heróis e deuses.",
+"solo grecia":"Grécia tem solo montanhoso e pobre. Não dava pra plantar muito, então viraram navegadores e comerciantes no mar Mediterrâneo.",
+"legado gregos":"Gregos deixaram: Democracia, Filosofia (Sócrates), Teatro, Olimpíadas, Arquitetura, Matemática!",
+"exercito romano":"Exército romano era MUITO forte. Conquistava povos e trazia prisioneiros como escravos. Por isso Roma ficou rica.",
+"sociedade romana":"Patrícios = ricos donos de terra. Plebeus = povo livre pobre. Escravos = sem direitos, base da economia.",
+"barbaros":"Bárbaros = povos germanos (visigodos, ostrogodos) que viviam fora de Roma. No fim, invadiram e derrubaram o Império em 476 d.C.",
+"esparta atenas":"Esparta = militar, criança treinada pra guerra. Atenas = intelectual, filosofia, arte e democracia.",
+"roma grecia":"Grécia veio antes e influenciou Roma. Roma copiou deuses, arquitetura, mas criou império gigante e leis.",
+};
+function getAnswer(t){
+  t=t.toLowerCase();
+  for(let k in knowledge){ if(t.includes(k.split(' ')[0]) || t.includes(k)) return knowledge[k]; }
+  if(t.includes("cidade")) return knowledge["cidade estado"];
+  if(t.includes("democracia")) return knowledge["democracia atenas"];
+  if(t.includes("pax")) return knowledge["pax romana"];
+  if(t.includes("barbar")) return knowledge["barbaros"];
+  if(t.includes("escravo")) return knowledge["exercito romano"];
+  if(t.includes("patricio")||t.includes("plebeu")) return knowledge["sociedade romana"];
+  if(t.includes("solo")||t.includes("economia")) return knowledge["solo grecia"];
+  if(t.includes("homero")||t.includes("iliada")) return knowledge["iliada odisseia"];
+  if(t.includes("legado")||t.includes("deixaram")) return knowledge["legado gregos"];
+  return "Boa pergunta! 🤔 Eu só respondo sobre o assunto da prova: Grécia Antiga (cidade-estado, democracia, Ilíada/Odisseia, solo) e Roma (exército, sociedade, Pax Romana, bárbaros). Pergunta de novo de outro jeito?";
+}
+function openChat(){
+  document.getElementById('chatOverlay').style.display='flex';
+  if(document.getElementById('msgs').children.length===0){
+    addMsg("Fala, gamer da 1002! 🏛️ Eu sou seu professor de História IA. Pode perguntar qualquer coisa sobre Grécia e Roma que cai na prova de 02/09!","bot");
+    showSugs();
+  }
+}
+function closeChat(){document.getElementById('chatOverlay').style.display='none';}
+function addMsg(txt,who){
+  let d=document.createElement('div'); d.className='msg '+(who==='bot'?'msg-bot':'msg-user'); d.textContent=txt;
+  document.getElementById('msgs').appendChild(d);
+  document.getElementById('msgs').scrollTop=99999;
+}
+function showSugs(){
+  let s=["O que é Pax Romana?","Quem eram os bárbaros?","Como era Atenas e Esparta?","O que é cidade-estado?"];
+  let c=document.getElementById('sugs'); c.innerHTML='';
+  s.forEach(t=>{let b=document.createElement('div'); b.className='sug'; b.textContent=t; b.onclick=()=>{document.getElementById('chatIn').value=t; send();}; c.appendChild(b);});
+}
+function send(){
+  let i=document.getElementById('chatIn'); let txt=i.value.trim(); if(!txt) return;
+  addMsg(txt,'user'); i.value='';
+  setTimeout(()=>{addMsg(getAnswer(txt),'bot');}, 400);
+}
+</script>
+</body>
+</html>
