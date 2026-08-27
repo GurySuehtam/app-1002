@@ -11,9 +11,14 @@
 <div class="max-w-6xl mx-auto">
   <div class="flex justify-between items-center">
     <div><h1 class="text-3xl font-black">PAINEL ADMIN 1002 <span class="text-[#5865F2]">.</span></h1><p class="text-xs mono text-white/40">LOGADO COMO MATHEUS PEREIRA • REPRESENTANTE</p></div>
-    <button onclick="load()" class="bg-[#5865F2] px-5 py-3 rounded-xl font-bold">🔄 ATUALIZAR</button>
+    <div class="flex gap-2">
+      <a href="painel-aulas.html" class="bg-white text-black px-5 py-3 rounded-xl font-bold">📚 PAINEL AULAS →</a>
+      <button onclick="load()" class="bg-[#5865F2] px-5 py-3 rounded-xl font-bold">🔄 ATUALIZAR</button>
+    </div>
   </div>
+
   <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mt-6" id="dash"></div>
+
   <div class="grid lg:grid-cols-3 gap-5 mt-8">
     <div class="space-y-5">
       <div class="glass p-5 rounded-[22px]">
@@ -37,17 +42,6 @@
         <div class="flex gap-2 mt-3"><input id="matNome" placeholder="Nome: Matemática" class="flex-1 p-3 rounded-xl"><input id="matIcon" placeholder="📐" class="w-20 p-3 rounded-xl"></div>
         <button onclick="criarMateria()" class="w-full mt-2 bg-white text-black p-3 rounded-xl font-black">CRIAR MATÉRIA</button>
         <div id="listaMat" class="mt-4 text-sm"></div>
-        <div class="border-t border-white/10 mt-5 pt-5">
-          <h3 class="font-black text-sm">➕ ADICIONAR AULA DENTRO DA MATÉRIA</h3>
-          <p class="text-[11px] text-white/40">Essa aula vai aparecer quando o aluno clicar na matéria</p>
-          <select id="aulaMat" class="w-full mt-3 p-3 rounded-xl"></select>
-          <input id="aulaTit" placeholder="Título: Aula 12 - Equações" class="w-full mt-2 p-3 rounded-xl">
-          <input id="aulaData" type="date" class="w-full mt-2 p-3 rounded-xl">
-          <textarea id="aulaCont" placeholder="📖 Conteúdo da aula" class="w-full mt-2 p-3 rounded-xl h-24"></textarea>
-          <textarea id="aulaQuadro" placeholder="🧑‍🏫 O que foi escrito no quadro" class="w-full mt-2 p-3 rounded-xl"></textarea>
-          <textarea id="aulaObs" placeholder="📌 Observações" class="w-full mt-2 p-3 rounded-xl"></textarea>
-          <button onclick="criarAula()" class="w-full mt-2 bg-indigo-600 p-3 rounded-xl font-black">SALVAR AULA</button>
-        </div>
       </div>
     </div>
     <div class="space-y-5">
@@ -67,73 +61,55 @@
   </div>
 </div>
 <script>
-const IS_GITHUB = location.hostname.includes('github.io');
-const STORAGE_KEY = 'painel1002_v2_final';
-function getDB(){
-  if(!localStorage.getItem(STORAGE_KEY)){
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({alunos:[], avisos:[], materias:[], aulas:[], trabalhos:[], agenda:[]}));
-  }
-  return JSON.parse(localStorage.getItem(STORAGE_KEY));
-}
-function saveDB(db){ localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); }
-function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
 const API = location.origin;
+const STORAGE_KEY = 'painel1002_v2_final';
+const IS_GITHUB = location.hostname.includes('github.io');
+function getDB(){ if(!localStorage.getItem(STORAGE_KEY)) localStorage.setItem(STORAGE_KEY, JSON.stringify({alunos:[], avisos:[], materias:[], aulas:[], trabalhos:[], agenda:[]})); return JSON.parse(localStorage.getItem(STORAGE_KEY)); }
+function saveDB(db){ localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,5); }
+
 async function load(){
-  let alunos, avisos, materias, trabalhos, agenda;
+  let alunos=[], avisos=[], materias=[], trabalhos=[], agenda=[];
   if(IS_GITHUB){
-    const db = getDB();
-    alunos = db.alunos; avisos = db.avisos; materias = db.materias; trabalhos = db.trabalhos; agenda = db.agenda;
+    const db=getDB(); alunos=db.alunos; avisos=db.avisos; materias=db.materias; trabalhos=db.trabalhos; agenda=db.agenda;
   } else {
-    try {
-      [alunos, avisos, materias, trabalhos, agenda] = await Promise.all([
-        fetch(API+'/api/alunos').then(r=>r.json()),
-        fetch(API+'/api/avisos').then(r=>r.json()),
-        fetch(API+'/api/materias').then(r=>r.json()),
-        fetch(API+'/api/trabalhos').then(r=>r.json()),
-        fetch(API+'/api/agenda').then(r=>r.json())
-      ]);
-    } catch(e){ const db=getDB(); alunos=db.alunos; avisos=db.avisos; materias=db.materias; trabalhos=db.trabalhos; agenda=db.agenda; }
+    try{
+      [alunos, avisos, materias, trabalhos, agenda] = await Promise.all([fetch(API+'/api/alunos').then(r=>r.json()), fetch(API+'/api/avisos').then(r=>r.json()), fetch(API+'/api/materias').then(r=>r.json()), fetch(API+'/api/trabalhos').then(r=>r.json()), fetch(API+'/api/agenda').then(r=>r.json())]);
+    }catch(e){ const db=getDB(); alunos=db.alunos; avisos=db.avisos; materias=db.materias; trabalhos=db.trabalhos; agenda=db.agenda; }
   }
   document.getElementById('dash').innerHTML=`<div class="glass p-4 rounded-xl">👥 <b class="text-xl">${alunos.length}</b><br><span class="text-[10px] mono">ALUNOS CADASTRADOS</span></div><div class="glass p-4 rounded-xl">📢 <b>${avisos.length}</b> avisos</div><div class="glass p-4 rounded-xl">📚 <b>${materias.length}</b> matérias</div><div class="glass p-4 rounded-xl">📝 <b>${trabalhos.length}</b> trabalhos</div><div class="glass p-4 rounded-xl">📅 <b>${agenda.length}</b> eventos</div>`;
-  document.getElementById('listaAlunos').innerHTML = alunos.length? alunos.map(a=>`<div class="flex justify-between items-center bg-white/[0.05] p-3 rounded-xl border border-white/5"><div><b>${a.nome}</b><div class="text-[11px] text-white/40 mono">${a.turma||'1002'} • ${new Date(a.criado_em||Date.now()).toLocaleString('pt-BR')}</div></div><div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div></div>`).join('') : '<p class="text-white/30 text-sm">Ninguém se cadastrou ainda. Compartilhe o link do app!</p>';
+  document.getElementById('listaAlunos').innerHTML = alunos.length? alunos.map(a=>`<div class="flex justify-between items-center bg-white/[0.05] p-3 rounded-xl border border-white/5"><div><b>${a.nome}</b><div class="text-[11px] text-white/40 mono">${a.turma||'1002'} • ${new Date(a.criado_em||Date.now()).toLocaleString('pt-BR')}</div></div><div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div></div>`).join('') : '<p class="text-white/30 text-sm">Ninguém se cadastrou ainda.</p>';
   document.getElementById('listaAvisos').innerHTML=avisos.map(a=>`<div class="flex justify-between bg-white/5 p-2 rounded"><span>${a.titulo}</span><button onclick="del('avisos','${a.id}')" class="text-red-400">Excluir</button></div>`).join('');
   document.getElementById('listaMat').innerHTML=materias.map(m=>`<div class="flex justify-between bg-white/5 p-2 rounded mt-1"><span>${m.icone} ${m.nome}</span><button onclick="del('materias','${m.id}')" class="text-red-400">x</button></div>`).join('');
-  document.getElementById('aulaMat').innerHTML=materias.map(m=>`<option value="${m.id}">${m.nome}</option>`).join('')||'<option>Nenhuma matéria criada</option>';
   document.getElementById('listaTrab').innerHTML=trabalhos.map(t=>`<div class="flex justify-between bg-white/5 p-2 rounded mt-1"><span>${t.titulo}</span><button onclick="del('trabalhos','${t.id}')" class="text-red-400">x</button></div>`).join('');
   document.getElementById('listaAgenda').innerHTML=agenda.map(a=>`<div class="flex justify-between bg-white/5 p-2 rounded mt-1"><span>${a.titulo}</span><button onclick="del('agenda','${a.id}')" class="text-red-400">x</button></div>`).join('');
 }
 async function criarAviso(){
-  const novo={id:uid(), titulo:avTitulo.value, descricao:avDesc.value, materia:avMat.value, data_evento:avData.value, prioridade:avPri.value, destaque:avDest.checked, criado_em:new Date().toISOString()};
-  if(IS_GITHUB){ const db=getDB(); db.avisos.unshift(novo); saveDB(db); } else { await fetch(API+'/api/avisos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(novo)}); }
-  avTitulo.value=''; avDesc.value=''; load(); alert('Aviso publicado!');
+  if(!avTitulo.value){ alert('Coloca o título!'); return; }
+  const dados={id:uid(), titulo:avTitulo.value, descricao:avDesc.value, materia:avMat.value, data_evento:avData.value, prioridade:avPri.value, destaque:avDest.checked, criado_em:new Date().toISOString()};
+  if(IS_GITHUB){ const db=getDB(); db.avisos.unshift(dados); saveDB(db); }
+  else { await fetch(API+'/api/avisos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(dados)}); }
+  avTitulo.value=''; avDesc.value=''; load(); alert('Aviso publicado! Já está no app dos alunos.');
 }
 async function criarMateria(){
-  const novo={id:uid(), nome:matNome.value, icone:matIcon.value||'📚'};
-  if(IS_GITHUB){ const db=getDB(); db.materias.push(novo); saveDB(db); } else { await fetch(API+'/api/materias',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(novo)}); }
+  const dados={id:uid(), nome:matNome.value, icone:matIcon.value||'📚'};
+  if(IS_GITHUB){ const db=getDB(); db.materias.push(dados); saveDB(db); } else { await fetch(API+'/api/materias',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(dados)}); }
   matNome.value=''; load();
 }
-async function criarAula(){
-  const novo={id:uid(), materia_id:aulaMat.value, titulo:aulaTit.value, data_aula:aulaData.value, conteudo:aulaCont.value, quadro:aulaQuadro.value, observacoes:aulaObs.value, novo:true, criado_em:new Date().toISOString()};
-  if(IS_GITHUB){ const db=getDB(); db.aulas.push(novo); saveDB(db); } else { await fetch(API+'/api/aulas',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(novo)}); }
-  alert('Aula salva! Alunos vão ver 🔴 NOVO'); load();
-}
 async function criarTrab(){
-  const novo={id:uid(), materia:trMat.value, titulo:trTit.value, descricao:trDesc.value, data_entrega:trData.value, prioridade:trPri.value, criado_em:new Date().toISOString()};
-  if(IS_GITHUB){ const db=getDB(); db.trabalhos.push(novo); saveDB(db); } else { await fetch(API+'/api/trabalhos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(novo)}); }
+  const dados={id:uid(), materia:trMat.value, titulo:trTit.value, descricao:trDesc.value, data_entrega:trData.value, prioridade:trPri.value, criado_em:new Date().toISOString()};
+  if(IS_GITHUB){ const db=getDB(); db.trabalhos.push(dados); saveDB(db); } else { await fetch(API+'/api/trabalhos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(dados)}); }
   load();
 }
 async function criarAgenda(){
-  const novo={id:uid(), titulo:agTit.value, descricao:agDesc.value, data_evento:agData.value, horario:agHora.value, prioridade:agPri.value, criado_em:new Date().toISOString()};
-  if(IS_GITHUB){ const db=getDB(); db.agenda.push(novo); saveDB(db); } else { await fetch(API+'/api/agenda',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(novo)}); }
+  const dados={id:uid(), titulo:agTit.value, descricao:agDesc.value, data_evento:agData.value, horario:agHora.value, prioridade:agPri.value, criado_em:new Date().toISOString()};
+  if(IS_GITHUB){ const db=getDB(); db.agenda.push(dados); saveDB(db); } else { await fetch(API+'/api/agenda',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(dados)}); }
   load();
 }
 async function del(tipo, id){
   if(!confirm('Excluir mesmo?')) return;
-  if(IS_GITHUB){
-    const db=getDB(); db[tipo]=db[tipo].filter(x=>x.id!=id); saveDB(db); load();
-  } else {
-    await fetch(API+'/api/'+tipo+'/'+id,{method:'DELETE'}); load();
-  }
+  if(IS_GITHUB){ const db=getDB(); db[tipo]=db[tipo].filter(x=>x.id!=id); saveDB(db); load(); }
+  else { await fetch(API+'/api/'+tipo+'/'+id,{method:'DELETE'}); load(); }
 }
 load(); setInterval(load, 5000);
 </script></body></html>
