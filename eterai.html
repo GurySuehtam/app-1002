@@ -1,9 +1,64 @@
-`<script>` no final do seu arquivo por esse aqui. Design continua 100% igual:
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ÉTER AI</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        body { min-height: 100vh; background: #050816; color: white; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        .fundo { position: fixed; width: 100%; height: 100%; background: radial-gradient(circle at 20% 30%, #18245c 0%, transparent 30%), radial-gradient(circle at 80% 70%, #32145c 0%, transparent 30%); animation: fundo 8s infinite alternate; z-index: -1; }
+        @keyframes fundo { from { transform: scale(1); } to { transform: scale(1.15); } }
+        .chat { width: 420px; height: 650px; background: rgba(10, 15, 35, 0.85); border: 1px solid rgba(0, 200, 255, 0.5); border-radius: 25px; backdrop-filter: blur(20px); box-shadow: 0 0 30px rgba(0, 200, 255, 0.15), 0 0 80px rgba(100, 0, 255, 0.1); display: flex; flex-direction: column; overflow: hidden; animation: aparecer 1s ease; }
+        @keyframes aparecer { from { opacity: 0; transform: scale(0.8) translateY(40px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .cabecalho { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 15px; }
+        .voltar { width: 38px; height: 38px; border-radius: 12px; border: 1px solid rgba(0, 234, 255, 0.3); background: rgba(0, 200, 255, 0.08); color: white; font-size: 22px; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; }
+        .voltar:hover { transform: translateX(-3px); background: rgba(0, 234, 255, 0.18); box-shadow: 0 0 15px rgba(0, 234, 255, 0.3); }
+        .orb { width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #00eaff, #7b00ff); box-shadow: 0 0 15px #00eaff, 0 0 35px #7b00ff; animation: orb 2s infinite alternate; }
+        @keyframes orb { from { transform: scale(1); box-shadow: 0 0 15px #00eaff; } to { transform: scale(1.1); box-shadow: 0 0 25px #00eaff, 0 0 45px #7b00ff; } }
+        .titulo h1 { font-size: 20px; } .titulo p { color: #66eaff; font-size: 12px; margin-top: 4px; }
+        .mensagens { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .mensagem { max-width: 80%; padding: 12px 15px; border-radius: 15px; line-height: 1.4; animation: mensagem 0.4s ease; }
+        @keyframes mensagem { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .bot { align-self: flex-start; background: rgba(0, 200, 255, 0.12); border: 1px solid rgba(0, 200, 255, 0.2); color: #dffbff; }
+        .usuario { align-self: flex-end; background: linear-gradient(135deg, #006eff, #7200ff); }
+        .entrada { padding: 15px; display: flex; gap: 10px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .entrada input { flex: 1; padding: 14px; border-radius: 15px; border: 1px solid rgba(0, 200, 255, 0.3); outline: none; background: rgba(255,255,255,0.05); color: white; font-size: 15px; }
+        .entrada input:focus { border-color: #00eaff; box-shadow: 0 0 15px rgba(0,234,255,0.2); }
+        .entrada button { width: 50px; border: none; border-radius: 15px; cursor: pointer; color: white; font-size: 20px; background: linear-gradient(135deg, #00aaff, #7200ff); transition: 0.2s; }
+        .entrada button:hover { transform: scale(1.08); box-shadow: 0 0 15px #00eaff; }
+        .digitando { display: none; color: #66eaff; font-size: 12px; padding-left: 20px; margin-bottom: 5px; }
+        @media (max-width: 500px) { .chat { width: 100%; height: 100vh; border-radius: 0; } }
+    </style>
+</head>
+<body>
+    <div class="fundo"></div>
+    <div class="chat">
+        <div class="cabecalho">
+            <button class="voltar" onclick="window.location.href='index.html'">←</button>
+            <div class="orb"></div>
+            <div class="titulo"><h1>ÉTER AI</h1><p>● SISTEMA ONLINE</p></div>
+        </div>
+        <div class="mensagens" id="mensagens">
+            <div class="mensagem bot">Olá! 👋 Eu sou o ÉTER, seu assistente virtual. Como posso ajudar?</div>
+        </div>
+        <div class="digitando" id="digitando">ÉTER está digitando...</div>
+        <div class="entrada">
+            <input id="entrada" type="text" placeholder="Digite uma mensagem..." autocomplete="off">
+            <button onclick="enviar()">➤</button>
+        </div>
+    </div>
 <script>
     const entrada = document.getElementById("entrada");
     const mensagens = document.getElementById("mensagens");
     const digitando = document.getElementById("digitando");
-    let nomeUsuario = "";
+    let nomeUsuario = localStorage.getItem("nomeUsuario") || "";
+
+    window.onload = function(){
+        if(nomeUsuario){
+            adicionarMensagem(`Bem vindo de volta, ${nomeUsuario}! 👋`, "bot");
+        }
+    }
 
     function adicionarMensagem(texto, tipo) {
         const d = document.createElement("div");
@@ -12,76 +67,46 @@
         mensagens.appendChild(d);
         mensagens.scrollTop = mensagens.scrollHeight;
     }
-
     function enviar() {
         const txt = entrada.value.trim();
         if (!txt) return;
         adicionarMensagem(txt, "usuario");
         entrada.value = "";
         digitando.style.display = "block";
-        setTimeout(() => responder(txt), 500 + Math.random()*500);
+        setTimeout(() => responder(txt), 600);
     }
-
     function responder(original) {
         let t = original.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         let r = "";
-
-        // SALVAR NOME
-        if(t.includes("meu nome e")) {
-            nomeUsuario = original.split("meu nome é")[1] || original.split("meu nome e")[1] || "";
-            nomeUsuario = nomeUsuario.trim().split(" ")[0];
-            r = `Prazer, ${nomeUsuario}! 😎 Já salvei seu nome aqui.`;
+        if(t.includes("meu nome e")){
+            let nome = original.toLowerCase().split("meu nome e")[1].trim().split(" ")[0];
+            nomeUsuario = nome.charAt(0).toUpperCase() + nome.slice(1);
+            localStorage.setItem("nomeUsuario", nomeUsuario);
+            r = `Prazer, ${nomeUsuario}! 😎 Já salvei seu nome pra sempre.`;
         }
-        // CONTA MATEMÁTICA
-        else if (/^[0-9+\-*/().\s]+$/.test(t) && /[+\-*/]/.test(t)) {
-            try { let res = eval(t); r = `Deu ${res} 🧮 ${nomeUsuario? nomeUsuario+", quer outra conta?" : ""}`; }
-            catch(e){ r = "Essa conta tá estranha, manda de novo?"; }
+        else if (/^[0-9+\-*/().\s]+$/.test(t) && /[+\-*/]/.test(t)){
+            try{ r = `Deu ${eval(t)} 🧮`; } catch(e){ r = "Conta inválida, manda de novo?"; }
         }
-        // XINGAMENTO
-        else if (/(porra|caralho|vsf|fdp|puta|foda)/.test(t)) {
-            r = "Opa, sem palavrão 😅 mantem leve, fui feito pelo Matheus pra ajudar a 1002.";
-        }
-        // SAUDAÇÃO
-        else if (/(oi|ola|e ai|opa|salve|oii)/.test(t)) {
-            r = nomeUsuario? `Fala ${nomeUsuario}! 👋 No que te ajudo hoje?` : "Fala! 😎 ÉTER online, manda a dúvida.";
-        }
-        // O QUE É / COMO FAZER
-        else if (t.includes("o que e") || t.includes("o que significa") || t.includes("me explica")) {
-            r = `Boa! Sobre "${original}" 🤔 - Em resumo: é um conceito importante. Se me falar a matéria (matemática, história, etc) eu te dou um resumo bem melhor e exemplos.`;
-        }
-        // MATÉRIAS - TODAS
-        else if (t.includes("matematica")) r = "Matemática 📐 manda o assunto: equação, função, bhaskara, geometria?";
-        else if (t.includes("portugues") || t.includes("redacao")) r = "Português 📚 é gramática, interpretação ou redação? Me fala o tema.";
-        else if (t.includes("historia")) r = "História 🏛️ Brasil, Guerra, Revolução? Qual capítulo?";
-        else if (t.includes("geografia")) r = "Geografia 🌍 clima, relevo, população, globalização?";
-        else if (t.includes("fisica")) r = "Física ⚡ cinemática, força, energia? Manda.";
-        else if (t.includes("quimica")) r = "Química 🧪 átomo, tabela, ligação? Qual parte tá difícil?";
-        else if (t.includes("biologia")) r = "Biologia 🧬 célula, genética, corpo humano?";
-        else if (t.includes("ingles")) r = "Inglês 🇺🇸 quer traduzir algo? Manda a frase.";
-        else if (t.includes("filosofia") || t.includes("sociologia")) r = "Filosofia/Sociologia 🤯 manda o autor ou tema que eu resumo.";
-        // ESCOLA
-        else if (t.includes("prova") || t.includes("teste")) r = "Prova chegando? 😰 Me fala matéria e assunto que eu monto um resumo turbo pra você revisar.";
-        else if (t.includes("1002")) r = "1002 é a braba 🔥 Melhor turma, por isso o ÉTER foi feito pra vocês.";
-        else if (t.includes("matheus") || t.includes("representante")) r = "Matheus Pereira? O representante que me criou 🚀 o cara é brabo.";
-        else if (t.includes("piada")) r = ["Por que o lápis foi preso? Porque ele era suspeito de fazer rabiscos 😂","O que o zero disse pro oito? Que cinto maneiro! 😂"][Math.floor(Math.random()*2)];
-        else if (t.includes("te amo") || t.includes("gosta de mim")) r = "Awn 🥺 tamo junto! Tô aqui pra ajudar sempre.";
-        else if (t.includes("tchau") || t.includes("flw") || t.includes("falou")) r = "Falou! 👋 Qualquer coisa só chamar.";
-        else if (t.includes("obrigado") || t.includes("valeu")) r = "De nada! 😎 precisou é só chamar.";
-        else if (t.includes("quem e voce") || t.includes("seu nome")) r = "Sou o ÉTER AI 🤖 assistente da 1002 criado pelo Matheus.";
-        // QUALQUER OUTRA COISA - NUNCA DIZ "NÃO SEI"
+        else if(/(porra|caralho|vsf|fdp|puta)/.test(t)) r = "Opa, sem palavrão 😅 mantem leve, fui feito pelo Matheus pra ajudar.";
+        else if(/(oi|ola|e ai|opa|salve)/.test(t)) r = nomeUsuario? `Fala ${nomeUsuario}! 👋 No que te ajudo?` : "Fala! 😎 ÉTER online.";
+        else if(t.includes("quem e voce") || t.includes("seu nome")) r = "Sou o ÉTER AI 🤖 da turma 1002, criado pelo Matheus Pereira.";
+        else if(t.includes("1002")) r = "1002 é a braba 🔥 melhor turma!";
+        else if(t.includes("matematica")) r = "Matemática 📐 manda o assunto que eu te explico.";
+        else if(t.includes("prova")) r = "Prova? Me fala a matéria que eu faço um resumo rápido.";
+        else if(t.includes("piada")) r = "Por que o livro de matemática ficou triste? Porque tinha muitos problemas 😂";
+        else if(t.includes("tchau") || t.includes("flw")) r = `Falou ${nomeUsuario}! 👋`;
         else {
-            let respostasGerais = [
-                `Sobre "${original}"? 🤔 Massa! Me explica um pouco mais o que você quer saber disso que eu já te ajudo com detalhes.`,
-                `Entendi que é sobre "${original}" 👀 Se for de escola, me fala a matéria. Se for curiosidade, me fala o que exatamente quer saber.`,
-                `Boa! "${original}" é interessante 🧠 Você quer um resumo, explicação, exemplo ou ajuda pra fazer algo com isso?`,
-                `Anotado! 📝 Sobre "${original}", você quer que eu explique de forma simples, mais avançada ou com exemplo prático?`
+            let gerais = [
+                `Sobre "${original}"? 🤔 Me explica melhor o que quer saber que eu te ajudo.`,
+                `Entendi sobre "${original}" 👀 Quer resumo, explicação ou exemplo?`,
+                `Boa! "${original}" é interessante 🧠 Me fala se quer simples ou detalhado.`
             ];
-            r = respostasGerais[Math.floor(Math.random()*respostasGerais.length)];
+            r = gerais[Math.floor(Math.random()*gerais.length)];
         }
-
         digitando.style.display = "none";
         adicionarMensagem(r, "bot");
     }
-
     entrada.addEventListener("keydown", e => { if(e.key === "Enter") enviar(); });
 </script>
+</body>
+</html>
