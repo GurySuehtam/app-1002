@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Detalhe - 1002</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:#0e0e11!important}
+body{color:#fff;font-family:Inter,system-ui,Arial,sans-serif;padding:20px;min-height:100vh}
+.voltar{background:#191922;border:1px solid #262638;color:#fff;padding:10px 16px;border-radius:999px;font-size:12px;text-decoration:none;display:inline-block}
+.voltar:hover{background:#222230}
+.titulo{font-size:38px;font-weight:900;margin-top:20px;letter-spacing:-1px;line-height:1}
+.titulo span{color:#5865F2}
+.sub{color:#5a5a6e;font-family:monospace;font-size:11px;margin-top:8px}
+.aula{background:#191922;border:1px solid #262638;border-radius:26px;padding:22px;margin-top:18px;position:relative;overflow:hidden}
+.aula::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(#5865F2,#ff3b9a)}
+.data{background:#fff;color:#000;padding:6px 12px;border-radius:999px;font-weight:900;font-size:11px;display:inline-block}
+.label{font-family:monospace;font-size:11px;font-weight:900;letter-spacing:1px;margin-bottom:8px}
+.bloco{margin-top:18px}
+.pre{white-space:pre-wrap;background:#00000070;padding:14px 16px;border-radius:16px;font-size:14px;line-height:1.7;border:1px solid #ffffff0f;word-break:break-word;color:#d1d5db}
+.pre.quadro{background:linear-gradient(135deg,#5865F222,#ff3b9a22);border-color:#5865F233;color:#fff}
+.pre.obs{background:#facc1515;border-color:#facc1525}
+</style>
+</head>
+<body>
+<a class="voltar" href="materias.html">← MATÉRIAS</a>
+<div id="nome" class="titulo">Carregando...</div>
+<div id="sub" class="sub"></div>
+<div id="lista"></div>
+
+<script>
+const id = new URLSearchParams(location.search).get('id');
+
+async function carregar(){
+  try{
+    const materias = await fetch('/api/materias').then(r=>r.json());
+    const mat = materias.find(m=>String(m.id)===String(id));
+    if(mat){
+      document.getElementById('nome').innerHTML = `${mat.icone||'📚'} ${mat.nome.toUpperCase()}<span>.</span>`;
+      document.getElementById('sub').textContent = `${mat.nome} • TODAS AS AULAS`;
+    }
+
+    let aulas = await fetch('/api/aulas').then(r=>r.json());
+    aulas = aulas.filter(a=>String(a.materia_id)===String(id)).sort((a,b)=>new Date(b.data_aula)-new Date(a.data_aula));
+
+    document.getElementById('lista').innerHTML = aulas.map(a=>`
+      <div class="aula">
+        <span class="data">📅 ${a.data_aula} • ${a.titulo.toUpperCase()}</span>
+        
+        ${a.conteudo?`
+        <div class="bloco">
+          <div class="label" style="color:#5865F2">📖 CONTEÚDO DA AULA</div>
+          <div class="pre">${a.conteudo}</div>
+        </div>`:''}
+
+        ${a.quadro?`
+        <div class="bloco">
+          <div class="label" style="color:#ff3b9a">🧑‍🏫 O QUE FOI NO QUADRO</div>
+          <div class="pre quadro">${a.quadro}</div>
+        </div>`:''}
+
+        ${a.observacoes?`
+        <div class="bloco">
+          <div class="label" style="color:#facc15">📌 OBSERVAÇÕES</div>
+          <div class="pre obs">${a.observacoes}</div>
+        </div>`:''}
+      </div>
+    `).join('') || `<div class="aula" style="color:#666">Nenhuma aula cadastrada nessa matéria ainda.</div>`;
+
+  }catch(e){
+    document.getElementById('lista').innerHTML = `<div class="aula" style="border-color:red;color:#ff6b6b">Erro: ${e.message}</div>`;
+  }
+}
+carregar();
+</script>
+</body>
+</html>

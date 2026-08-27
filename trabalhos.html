@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trabalhos - 1002</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@800;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+<style>body{font-family:'Inter',sans-serif;background:#0e0e11;color:#fff}.mono{font-family:'JetBrains Mono',monospace}.glass{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08)}</style>
+</head>
+<body class="p-5 max-w-4xl mx-auto">
+<a href="turma 1002.html" class="bg-white text-black px-4 py-2 rounded-full text-xs font-black">← TURMA 1002</a>
+<h1 class="text-5xl font-black mt-6 tracking-tighter">TRABALHOS<span class="text-orange-500">.</span></h1>
+<p class="mono text-[11px] text-white/40 mt-2">TODOS OS TRABALHOS QUE O MATHEUS POSTAR</p>
+
+<div id="lista" class="grid md:grid-cols-2 gap-4 mt-8"></div>
+
+<script>
+async function load(){
+  let trabalhos = await fetch('/api/trabalhos').then(r=>r.json());
+  trabalhos = trabalhos.sort((a,b)=> new Date(a.data_entrega) - new Date(b.data_entrega));
+
+  document.getElementById('lista').innerHTML = trabalhos.map(t=>{
+    let pri = t.prioridade==='Urgente'? 'bg-red-500' : t.prioridade==='Importante'? 'bg-orange-500' : 'bg-zinc-700';
+    let atraso = new Date(t.data_entrega) < new Date()? 'opacity-60' : '';
+    return `
+    <div class="glass rounded-[26px] p-5 ${atraso}">
+      <div class="flex justify-between items-start">
+        <span class="${pri} text-[10px] font-black px-3 py-1 rounded-full">${t.prioridade||'Normal'}</span>
+        <span class="mono text-[10px] text-white/40">📅 ${t.data_entrega||'Sem data'}</span>
+      </div>
+      <div class="font-black text-xl mt-3 leading-tight">${t.titulo}</div>
+      <div class="mono text-[11px] text-orange-400 mt-1">${(t.materia||'').toUpperCase()}</div>
+      <div class="bg-black/50 p-3 rounded-xl mt-3 text-sm text-white/70 leading-relaxed">${t.descricao||''}</div>
+    </div>`
+  }).join('') || '<div class="glass p-6 rounded-2xl text-white/30">Nenhum trabalho ainda. Quando o Matheus postar no painel-admin, aparece aqui.</div>';
+}
+load();
+</script>
+</body>
+</html>

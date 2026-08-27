@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matérias - 1002</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:#0e0e11!important}
+body{color:#fff;font-family:Inter,system-ui,Arial,sans-serif;padding:20px;min-height:100vh}
+.voltar{background:#fff;color:#000;padding:10px 18px;border-radius:999px;font-weight:900;font-size:12px;text-decoration:none;display:inline-block}
+.titulo{font-size:44px;font-weight:900;margin-top:20px;letter-spacing:-1.5px}
+.titulo span{color:#5865F2}
+.sub{color:#5a5a6e;font-family:monospace;font-size:11px;margin-top:6px;letter-spacing:1px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-top:24px}
+.card{background:#191922;border:1px solid #262638;border-radius:26px;padding:22px;display:block;text-decoration:none;color:#fff}
+.card:hover{background:#222230;transform:translateY(-2px);transition:.2s}
+.icon{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,#5865F2,#ff3b9a);display:flex;align-items:center;justify-content:center;font-size:28px}
+.badge{background:#5865F2;padding:6px 12px;border-radius:999px;font-size:10px;font-weight:900}
+.preview{margin-top:14px;background:#00000080;padding:12px 14px;border-radius:14px;color:#9ca3af;font-size:13px;line-height:1.5}
+.mono{font-family:monospace;font-size:11px;color:#5865F2;font-weight:700}
+</style>
+</head>
+<body>
+<a class="voltar" href="turma 1002.html">← TURMA 1002</a>
+<div class="titulo">MATÉRIAS<span>.</span></div>
+<div class="sub">TOCA NA MATÉRIA PRA VER TUDO</div>
+<div id="lista" class="grid">
+  <div class="card">Carregando matérias...</div>
+</div>
+
+<script>
+async function carregar(){
+  const lista = document.getElementById('lista');
+  try{
+    const materias = await fetch('/api/materias').then(r=>r.json());
+    const aulas = await fetch('/api/aulas').then(r=>r.json());
+
+    if(!materias || materias.length===0){
+      lista.innerHTML = '<div class="card" style="color:#666">Nenhuma matéria ainda.<br>Cria no painel-admin.html</div>';
+      return;
+    }
+
+    lista.innerHTML = materias.map(m=>{
+      const aulasDaMateria = aulas.filter(a=>String(a.materia_id)===String(m.id));
+      const ult = aulasDaMateria.sort((a,b)=>new Date(b.data_aula)-new Date(a.data_aula))[0];
+      return `
+      <a class="card" href="materia-detalhe.html?id=${m.id}">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="icon">${m.icone||'📚'}</div>
+          <span class="badge">${aulasDaMateria.length} AULAS</span>
+        </div>
+        <div style="font-size:22px;font-weight:900;margin-top:16px;letter-spacing:-0.5px">${m.nome.toUpperCase()}</div>
+        ${ult?`
+          <div class="preview">
+            <div class="mono">📅 ${ult.data_aula} • ${ult.titulo.toUpperCase()}</div>
+            <div style="margin-top:6px">📖 ${ (ult.conteudo||'').substring(0,90) }...</div>
+            <div style="margin-top:4px">🧑‍🏫 ${ (ult.quadro||'').substring(0,90) }...</div>
+          </div>
+        `:`<div class="preview" style="color:#444">Nenhuma aula ainda</div>`}
+      </a>`;
+    }).join('');
+
+  }catch(e){
+    lista.innerHTML = `<div class="card" style="border-color:#ff4d4d;color:#ff6b6b">Erro ao carregar.<br>Verifica se rodou: node servidor.js<br><br>${e.message}</div>`;
+  }
+}
+carregar();
+</script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Aulas 1002</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+body{background:#0e0e11;color:#fff;font-family:Inter,sans-serif}
+.glass{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08)}
+input,select,textarea{background:#1e1e26!important;color:#fff!important;border:1px solid rgba(255,255,255,0.1)!important}
+</style>
+</head>
+<body class="p-6">
+
+<div id="lock" style="position:fixed;inset:0;background:#0e0e11;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px">
+  <div style="width:100%;max-width:360px;background:#1a1a22;border:1px solid rgba(255,255,255,.12);border-radius:24px;padding:28px;text-align:center">
+    <div style="width:64px;height:64px;background:#fff;color:#000;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto">🔒</div>
+    <h2 style="color:#fff;font-weight:900;margin:16px 0 4px;font-size:18px">PAINEL AULAS - RESTRITO</h2>
+    <p style="color:rgba(255,255,255,.5);font-size:11px;margin-bottom:20px;font-family:monospace">SÓ ADMIN 1002</p>
+    <input id="pass" type="password" placeholder="Digite a senha" style="width:100%;padding:16px;border-radius:999px;border:0;text-align:center;font-weight:900;font-size:16px;outline:none;background:#fff!important;color:#000!important">
+    <button onclick="checkPass()" style="width:100%;margin-top:12px;background:#5865F2;color:#fff;border:0;border-radius:999px;padding:16px;font-weight:900;cursor:pointer">ENTRAR</button>
+    <div id="err" style="color:#ef4444;font-size:12px;font-weight:800;margin-top:12px;display:none">Senha errada!</div>
+    <button onclick="window.location.href='turma 1002.html'" style="margin-top:14px;background:transparent;color:rgba(255,255,255,.4);border:0;font-size:11px;cursor:pointer;text-decoration:underline">Voltar para o app</button>
+  </div>
+</div>
+
+<script>
+const SENHA_ADMIN = "1002ADM";
+function checkPass(){
+  let p = document.getElementById('pass').value;
+  if(p === SENHA_ADMIN){
+    document.getElementById('lock').style.display='none';
+    localStorage.setItem('admin1002','ok');
+  }else{
+    document.getElementById('err').style.display='block';
+    document.getElementById('pass').value='';
+  }
+}
+if(localStorage.getItem('admin1002')==='ok'){
+  document.getElementById('lock').style.display='none';
+}
+</script>
+
+<div class="max-w-2xl mx-auto">
+  <h1 class="text-3xl font-black">PAINEL AULAS <span class="text-[#5865F2]">.</span></h1>
+  <p class="text-xs text-white/40">Só aulas aqui • <a href="painel-admin.html" class="text-[#5865F2]">voltar pro admin</a></p>
+  <div class="glass p-6 rounded-[22px] mt-6">
+    <label class="text-[11px] font-bold text-white/40">ESCOLHE A MATÉRIA (MUITO IMPORTANTE)</label>
+    <select id="materia" class="w-full p-4 rounded-xl mt-2 text-lg"></select>
+    <div class="mt-4 p-3 bg-[#5865F2]/20 rounded-xl border border-[#5865F2]/30 text-sm" id="infoMat">Selecione a matéria acima</div>
+    <input id="tit" placeholder="Título: Aula 12 - Sociologia e cultura" class="w-full p-4 rounded-xl mt-4">
+    <input id="data" type="date" class="w-full p-4 rounded-xl mt-3">
+    <textarea id="cont" placeholder="📖 CONTEÚDO DA AULA" class="w-full p-4 rounded-xl mt-3 h-28"></textarea>
+    <textarea id="quadro" placeholder="🧑‍🏫 O QUE FOI NO QUADRO" class="w-full p-4 rounded-xl mt-3 h-28"></textarea>
+    <textarea id="obs" placeholder="📌 OBSERVAÇÕES" class="w-full p-4 rounded-xl mt-3"></textarea>
+    <button onclick="salvar()" class="w-full bg-[#5865F2] p-4 rounded-xl font-black mt-4">SALVAR NESSA MATÉRIA</button>
+    <p id="status" class="mt-3 text-sm text-center"></p>
+  </div>
+</div>
+
+<script>
+let mats=[];
+async function load(){mats=await fetch('/api/materias').then(r=>r.json());document.getElementById('materia').innerHTML=mats.map(m=>`<option value="${m.id}">${m.icone||'📚'} ${m.nome}</option>`).join('');updateInfo()}
+function updateInfo(){let id=document.getElementById('materia').value;let m=mats.find(x=>String(x.id)===String(id));if(m)document.getElementById('infoMat').innerHTML=`Você vai salvar em: <b>${m.icone} ${m.nome.toUpperCase()}</b> (ID ${m.id})`}
+document.getElementById('materia').addEventListener('change',updateInfo);
+async function salvar(){
+ let mid=document.getElementById('materia').value;let m=mats.find(x=>String(x.id)===String(mid));
+ if(!confirm(`Confirma salvar a aula "${document.getElementById('tit').value}" na matéria ${m.nome}?`))return;
+ let body={materia_id:String(mid),titulo:tit.value,data_aula:data.value,conteudo:cont.value,quadro:quadro.value,observacoes:obs.value};
+ let r=await fetch('/api/aulas',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+ if(r.ok){status.textContent=`✅ Salvo em ${m.nome}!`;tit.value='';cont.value='';quadro.value='';obs.value='';} else status.textContent='Erro';
+}
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1002 Central | Exclusivo</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  *{font-family:'Inter',sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+  body{background:#0e0e11; color:white; overflow-x:hidden}
+.discord-bg{background: radial-gradient(600px at 0% 0%, #5865F2 0%, transparent 50%), radial-gradient(800px at 100% 0%, #EB459E 0%, transparent 50%), #0e0e11;}
+.glass{background:rgba(255,255,255,0.06); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.08)}
+.card-hover{transition:.3s cubic-bezier(.175,.885,.32,1.275)}
+.card-hover:hover{transform:translateY(-4px) scale(1.02); border-color:rgba(88,101,242,0.5); box-shadow:0 10px 40px -10px rgba(88,101,242,0.5)}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.float{animation:float 3s ease-in-out infinite}
+  @keyframes pulse-dot{0%{box-shadow:0 0 0 0 rgba(239,68,68,.7)}70%{box-shadow:0 0 0 10px rgba(239,68,68,0)}100%{box-shadow:0 0 0 0 rgba(239,68,68,0)}}
+.pulse-dot{animation:pulse-dot 2s infinite}
+.shimmer{position:relative; overflow:hidden}
+.shimmer:after{content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg, transparent, rgba(255,255,255,.1), transparent); animation:shimmer 2s infinite}
+  @keyframes shimmer{100%{left:100%}}
+</style>
+</head>
+<body class="discord-bg min-h-screen">
+<div id="login" class="min-h-screen flex items-center justify-center p-4">
+  <div class="w-full max-w-[420px]">
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center gap-2 bg-[#5865F2] text-white px-4 py-1.5 rounded-full text-xs font-bold mono tracking-widest">EXCLUSIVO TURMA 1002 • VERIFIED</div>
+      <h1 class="text-[48px] font-black leading-none mt-6 tracking-tighter">1002<span class="text-[#5865F2]">.</span></h1>
+      <p class="text-white/50 mt-2">central privada da nossa turma</p>
+    </div>
+    <div class="glass rounded-[28px] p-8 shadow-2xl">
+      <h2 class="font-bold text-lg">Entrar na Central</h2>
+      <p class="text-sm text-white/40 mt-1">Só membros da 1002 podem acessar.</p>
+      <input id="nome" placeholder="Seu nome completo" class="w-full mt-6 p-4 rounded-2xl bg-white/[0.07] border border-white/10 outline-none focus:border-[#5865F2] transition">
+      <div class="relative mt-3">
+        <input id="turma" value="1002" class="w-full p-4 rounded-2xl bg-white/[0.07] border border-white/10 outline-none mono font-bold">
+        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] bg-green-500 text-black px-2 py-1 rounded-full font-black">LIBERADO</span>
+      </div>
+      <button onclick="entrar()" class="w-full mt-5 bg-[#5865F2] hover:bg-[#4752c4] p-4 rounded-2xl font-bold transition shimmer">Acessar Central →</button>
+      <p class="text-[11px] text-white/30 text-center mt-4 mono">CRIADO POR MATHEUS PEREIRA • REPRESENTANTE 1002</p>
+    </div>
+  </div>
+</div>
+<div id="app" class="hidden">
+  <div class="max-w-[480px] mx-auto min-h-screen">
+    <div class="p-5 flex justify-between items-center sticky top-0 z-20 glass rounded-b-[20px]">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-full bg-gradient-to-br from-[#5865F2] to-[#EB459E] flex items-center justify-center font-black">10</div>
+        <div>
+          <div class="flex items-center gap-2"><h1 class="font-black">Olá, <span id="nomeAluno"></span></h1><div class="w-2 h-2 bg-green-500 rounded-full pulse-dot"></div></div>
+          <p class="text-[11px] text-white/40 mono">1002 • ONLINE AGORA</p>
+        </div>
+      </div>
+      <a href="inicio.html" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition">?</a>
+    </div>
+    <div class="p-4">
+      <div class="mt-2 rounded-[24px] p-[1px] bg-gradient-to-r from-[#5865F2] via-[#EB459E] to-[#5865F2]">
+        <div class="bg-[#1a1a20] rounded-[23px] p-4 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="float text-2xl">🔒</div>
+            <div><p class="font-bold text-sm leading-tight">App exclusivo da Turma 1002</p><p class="text-[11px] text-white/50">Feito por <b class="text-white">Matheus Pereira</b> • Representante</p></div>
+          </div>
+          <div class="text-[9px] mono bg-white text-black px-2 py-1 rounded-full font-black">PRIVATE</div>
+        </div>
+      </div>
+      <div class="mt-6">
+        <div class="flex items-center justify-between">
+          <h2 class="font-black text-[13px] tracking-widest mono flex items-center gap-2"><span class="w-2 h-8 bg-[#EB459E] rounded-full"></span> 📢 AVISOS EM DESTAQUE</h2>
+          <span id="avisoCount" class="text-[10px] bg-[#5865F2] px-2 py-1 rounded-full mono">0 NOVOS</span>
+        </div>
+        <div id="avisos" class="mt-3 space-y-3"></div>
+      </div>
+      <div class="mt-7 grid grid-cols-2 gap-3">
+        <a href="materias.html" class="glass rounded-[22px] p-5 card-hover group relative overflow-hidden">
+          <div class="absolute -right-6 -top-6 w-20 h-20 bg-[#5865F2]/20 rounded-full blur-xl group-hover:bg-[#5865F2]/30 transition"></div>
+          <div class="text-3xl">📚</div>
+          <div class="font-black mt-3">Matérias</div>
+          <div class="text-[11px] text-white/40">Aulas atualizadas</div>
+          <div id="dot-materias" class="hidden absolute top-4 right-4 w-3 h-3 bg-red-500 rounded-full pulse-dot"></div>
+        </a>
+        <a href="trabalhos.html" class="glass rounded-[22px] p-5 card-hover group relative overflow-hidden">
+          <div class="absolute -right-6 -top-6 w-20 h-20 bg-orange-500/20 rounded-full blur-xl"></div>
+          <div class="text-3xl">📝</div>
+          <div class="font-black mt-3">Trabalhos</div>
+          <div class="text-[11px] text-white/40">Entregas</div>
+          <div id="dot-trabalhos" class="hidden absolute top-4 right-4 w-3 h-3 bg-red-500 rounded-full pulse-dot"></div>
+        </a>
+        <a href="agenda.html" class="glass rounded-[22px] p-5 card-hover">
+          <div class="text-3xl">📅</div>
+          <div class="font-black mt-3">Agenda</div>
+          <div class="text-[11px] text-white/40">Provas e eventos</div>
+          <div id="dot-agenda" class="hidden absolute top-4 right-4 w-3 h-3 bg-red-500 rounded-full pulse-dot"></div>
+        </a>
+        <a href="ÉTER AI.html" class="rounded-[22px] p-5 card-hover bg-gradient-to-br from-[#5865F2] to-[#7c3aed] relative overflow-hidden">
+          <div class="text-3xl">🤖</div>
+          <div class="font-black mt-3">Éter AI</div>
+          <div class="text-[11px] text-white/70">Assistente 1002</div>
+          <div class="absolute top-3 right-3 text-[8px] mono bg-black/30 px-2 py-1 rounded-full">BETA</div>
+        </a>
+      </div>
+
+      <a href="history gamer.html" class="mt-4 relative rounded-[22px] p-[1px] bg-gradient-to-r from-[#22c55e] via-[#5865F2] to-[#EB459E] block card-hover group">
+        <div class="bg-gradient-to-br from-[#1a1a20] to-[#121214] rounded-[21px] p-5 flex items-center justify-between relative overflow-hidden">
+          <div class="absolute -right-10 -top-10 w-32 h-32 bg-[#22c55e]/20 rounded-full blur-2xl group-hover:bg-[#22c55e]/30 transition"></div>
+          <div class="flex items-center gap-4 relative z-10">
+            <div class="w-14 h-14 rounded-2xl bg-white text-black flex items-center justify-center text-2xl float">🎮</div>
+            <div>
+              <div class="flex items-center gap-2">
+                <div class="font-black text-[16px]">HISTORY GAMER</div>
+                <span class="bg-[#22c55e] text-black text-[8px] px-2 py-1 rounded-full font-black mono animate-pulse">NOVO • AO VIVO</span>
+              </div>
+              <div class="text-[11px] text-white/50 mt-1">Zere a prova de 2/9 • +120 XP por fase</div>
+            </div>
+          </div>
+          <div class="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center font-black group-hover:translate-x-1 transition">→</div>
+        </div>
+      </a>
+
+      <a href="inicio.html" class="mt-6 glass rounded-[20px] p-4 flex items-center justify-between group">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center font-black">?</div>
+          <div><div class="font-bold text-sm">Central de Dúvidas</div><div class="text-[11px] text-white/40">Ficou perdido? Clique aqui</div></div>
+        </div>
+        <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">→</div>
+      </a>
+      <p class="text-center text-[10px] text-white/20 mono mt-8 pb-6">DESIGNED & CODED BY MATHEUS PEREIRA © 2026 • 1002 NEVER DIES</p>
+    </div>
+  </div>
+</div>
+<script>
+const API = location.origin;
+if(localStorage.nome1002){ showApp(); load(); }
+function entrar(){
+  const n=document.getElementById('nome').value.trim();
+  const t=document.getElementById('turma').value.trim();
+  if(!n || t!=='1002') return alert('Só turma 1002!');
+  fetch(API+'/api/alunos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome:n,turma:t})}).then(()=>{localStorage.nome1002=n; showApp(); load();});
+}
+function showApp(){ document.getElementById('login').classList.add('hidden'); document.getElementById('app').classList.remove('hidden'); document.getElementById('nomeAluno').innerText=localStorage.nome1002.split(' ')[0]; }
+async function marcarLido(tipo,id){
+  await fetch(API+'/api/'+tipo+'/'+id+'/lido',{method:'PUT'});
+  load();
+}
+async function load(){
+  try{
+    const [avisos, aulas, trabalhos, agenda] = await Promise.all([
+      fetch(API+'/api/avisos').then(r=>r.json()),
+      fetch(API+'/api/aulas').then(r=>r.json()),
+      fetch(API+'/api/trabalhos').then(r=>r.json()),
+      fetch(API+'/api/agenda').then(r=>r.json())
+    ]);
+    const novos = avisos.filter(a=>a.novo).length;
+    document.getElementById('avisoCount').innerText = novos+' NOVOS';
+    document.getElementById('dot-materias').classList.toggle('hidden',!aulas.some(a=>a.novo));
+    document.getElementById('dot-trabalhos').classList.toggle('hidden',!trabalhos.some(a=>a.novo));
+    document.getElementById('dot-agenda').classList.toggle('hidden',!agenda.some(a=>a.novo));
+    document.getElementById('avisos').innerHTML = avisos.map(a=>{
+      const priColor = a.prioridade==='Urgente'?'from-red-500 to-orange-500':a.prioridade==='Importante'?'from-yellow-400 to-orange-400':'from-green-500 to-emerald-500';
+      const priIcon = a.prioridade==='Urgente'?'🔴':a.prioridade==='Importante'?'🟡':'🟢';
+      const destaqueStyle = a.destaque? 'ring-1 ring-[#5865F2] scale-[1.01]' : '';
+      return '<div onclick="marcarLido(\'avisos\',\''+a.id+'\')" class="glass rounded-[20px] p-[1px] '+destaqueStyle+' cursor-pointer"><div class="bg-[#1e1e26] rounded-[19px] p-4"><div class="flex justify-between items-start gap-2"><div class="flex gap-2 items-center"><span class="px-2 py-1 rounded-full bg-gradient-to-r '+priColor+' text-black font-black text-[10px]">'+priIcon+' '+(a.prioridade||'').toUpperCase()+'</span>'+(a.destaque?'<span class="text-[9px] bg-[#5865F2] px-2 py-1 rounded-full mono font-bold">DESTAQUE</span>':'')+'</div>'+(a.novo?'<span class="bg-red-500 text-white text-[9px] px-2 py-1 rounded-full font-black">NOVO</span>':'')+'</div><h3 class="font-black mt-3 text-[16px]">'+(a.titulo||'')+'</h3><p class="text-[13px] text-white/60 mt-1">'+(a.descricao||'')+'</p><div class="flex gap-2 mt-3 text-[10px] mono text-white/30"><span>'+(a.materia||'GERAL')+'</span><span>•</span><span>'+(a.data_evento||'')+'</span></div></div></div>';
+    }).join('') || '<div class="glass rounded-[20px] p-6 text-center text-white/30 text-sm">Nenhum aviso por enquanto. 😎</div>';
+  }catch(e){ console.log(e); document.getElementById('avisos').innerHTML='<div class="glass p-4 rounded-xl text-red-300">Erro ao carregar: '+e+'</div>'; }
+}
+</script>
+</body>
+</html>
